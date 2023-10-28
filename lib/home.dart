@@ -34,10 +34,10 @@ class _HomeState extends State<Home> {
           ],*/
         ),
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
           onPressed: () {
             Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => AddNotes()));
+                MaterialPageRoute(builder: (context) => const AddNotes()));
           },
         ),
         body: Column(
@@ -63,13 +63,18 @@ class _HomeState extends State<Home> {
                               );
                             }
                             return ListView.builder(
-                              itemCount: snapshot.data!.length,
-                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: snapshot.data != null
+                                  ? snapshot.data!.length
+                                  : 0,
+                              physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
                                 var id = snapshot.data![index]["id"];
                                 var title = snapshot.data![index]["title"];
                                 var note = snapshot.data![index]["note"];
+                                var isdone = snapshot.data![index]["isDone"];
+                                bool isDone = isdone == 0 ? false : true;
+
                                 return InkWell(
                                   onTap: () {
                                     Navigator.of(context)
@@ -78,13 +83,14 @@ class _HomeState extends State<Home> {
                                                   id: id,
                                                   title: title,
                                                   note: note,
+                                                  isDone: isDone,
                                                 )));
                                   },
                                   child: Dismissible(
                                     key: UniqueKey(),
                                     background: Container(
                                       color: Colors.red,
-                                      child: Icon(Icons.delete,
+                                      child: const Icon(Icons.delete,
                                           color: Colors.white),
                                     ),
                                     onDismissed: (direction) async {
@@ -99,7 +105,7 @@ class _HomeState extends State<Home> {
                                       setState(() {});
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                        content: Text('Item dismissed'),
+                                        content: const Text('Item dismissed'),
                                         action: SnackBarAction(
                                           label: 'Undo',
                                           onPressed: () async {
@@ -112,6 +118,14 @@ class _HomeState extends State<Home> {
                                       ));
                                     },
                                     child: ListTile(
+                                      leading: Checkbox(
+                                        value: isDone,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            isDone = !isDone;
+                                          });
+                                        },
+                                      ),
                                       subtitle: Text(
                                         snapshot.data![index]["note"]
                                             .toString(),

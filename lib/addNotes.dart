@@ -14,6 +14,7 @@ class _AddNotesState extends State<AddNotes> {
   GlobalKey<FormState> formstate = GlobalKey();
   TextEditingController note = TextEditingController();
   TextEditingController title = TextEditingController();
+  bool isDone = false;
 
   @override
   void dispose() {
@@ -37,6 +38,14 @@ class _AddNotesState extends State<AddNotes> {
                 key: formstate,
                 child: Column(
                   children: [
+                    Switch(
+                      value: isDone,
+                      onChanged: (value) {
+                        setState(() {
+                          isDone = value;
+                        });
+                      },
+                    ),
                     TextFormField(
                       controller: title,
                       decoration: InputDecoration(hintText: "title"),
@@ -51,7 +60,7 @@ class _AddNotesState extends State<AddNotes> {
                     MaterialButton(
                       onPressed: () async {
                         await sqlDb.insertData(
-                            "INSERT INTO 'notes' ('title' , 'note') VALUES ('${title.text}' , '${note.text}')");
+                            "INSERT INTO 'notes' ('title' , 'note' , 'isDone' ) VALUES ('${title.text}' , '${note.text}' , $isDone )");
                         Navigator.of(context).pushReplacement(
                             MaterialPageRoute(builder: (context) => Home()));
                       },

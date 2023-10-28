@@ -5,11 +5,16 @@ import 'home.dart';
 
 class EditNote extends StatefulWidget {
   const EditNote(
-      {super.key, required this.id, required this.note, required this.title});
+      {super.key,
+      required this.isDone,
+      required this.id,
+      required this.note,
+      required this.title});
 
   final int id;
   final String title;
   final String note;
+  final bool isDone;
 
   @override
   State<EditNote> createState() => _EditNoteState();
@@ -56,7 +61,7 @@ class _EditNoteState extends State<EditNote> {
                   MaterialButton(
                     onPressed: () async {
                       await sqlDb.updateData(
-                          "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' WHERE id = ${widget.id}");
+                          "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' ,  WHERE id = ${widget.id}");
                       Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) => Home()));
                     },

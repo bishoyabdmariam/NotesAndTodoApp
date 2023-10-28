@@ -17,7 +17,7 @@ class SqlDb {
     String databasePath = await getDatabasesPath();
     String path = join(databasePath, "bosh.db");
     Database myDb = await openDatabase(path,
-        onCreate: _onCreate, version: 5, onUpgrade: _onUpgrade);
+        onCreate: _onCreate, version: 7, onUpgrade: _onUpgrade);
     return myDb;
   }
 
@@ -26,14 +26,22 @@ class SqlDb {
       CREATE TABLE "notes" (
         "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT ,
         "title" TEXT NOT NULL ,
-        "note" TEXT NOT NULL 
+        "note" TEXT NOT NULL ,
+        "isDone" BOOLEAN NOT NULL DEFAULT FALSE
       )
     ''');
     print("Create database");
   }
 
-  _onUpgrade(Database myDb, int oldVersion, int newVersion) async {
+  /*_onUpgrade(Database myDb, int oldVersion, int newVersion) async {
+    ALTER TABLE notes ADD COLUMN isDone BOOLEAN NOT NULL DEFAULT FALSE;
     print("database upgraded");
+  }*/
+
+  _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // Add the isDone column to the notes table.
+    await db.execute(
+        'ALTER TABLE notes ADD COLUMN isDone BOOLEAN NOT NULL DEFAULT FALSE');
   }
 
   readData(String sql) async {
