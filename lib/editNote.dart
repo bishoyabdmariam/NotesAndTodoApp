@@ -22,6 +22,8 @@ class EditNote extends StatefulWidget {
 
 class _EditNoteState extends State<EditNote> {
   SqlDb sqlDb = SqlDb();
+  late bool isdone;
+
   GlobalKey<FormState> formstate = GlobalKey();
   TextEditingController noteController = TextEditingController();
   TextEditingController titleController = TextEditingController();
@@ -29,6 +31,7 @@ class _EditNoteState extends State<EditNote> {
   @override
   void initState() {
     super.initState();
+    isdone = widget.isDone;
     noteController.text = widget.note;
     titleController.text = widget.title;
   }
@@ -47,6 +50,13 @@ class _EditNoteState extends State<EditNote> {
               key: formstate,
               child: Column(
                 children: [
+                  Switch(
+                      value: isdone,
+                      onChanged: (value) {
+                        setState(() {
+                          isdone = value;
+                        });
+                      }),
                   TextFormField(
                     controller: noteController,
                     decoration: InputDecoration(hintText: "note"),
@@ -61,7 +71,7 @@ class _EditNoteState extends State<EditNote> {
                   MaterialButton(
                     onPressed: () async {
                       await sqlDb.updateData(
-                          "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' ,  WHERE id = ${widget.id}");
+                          "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1}  WHERE id = ${widget.id}");
                       Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) => Home()));
                     },

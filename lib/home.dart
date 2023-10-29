@@ -83,7 +83,9 @@ class _HomeState extends State<Home> {
                                                   id: id,
                                                   title: title,
                                                   note: note,
-                                                  isDone: isDone,
+                                                  isDone: isdone == 0
+                                                      ? false
+                                                      : true,
                                                 )));
                                   },
                                   child: Dismissible(
