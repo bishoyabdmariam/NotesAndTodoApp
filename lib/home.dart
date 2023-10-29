@@ -120,9 +120,13 @@ class _HomeState extends State<Home> {
                                     child: ListTile(
                                       leading: Checkbox(
                                         value: isDone,
-                                        onChanged: (value) {
+                                        onChanged: (value) async {
+                                          await sqlDb.updateData(
+                                              "UPDATE 'notes' SET 'isDone' = ${value == true ? 1 : 0}  WHERE id = ${snapshot.data![index]["id"]}");
                                           setState(() {
-                                            isDone = !isDone;
+                                            print(isDone);
+                                            isDone = value!;
+                                            print(isDone);
                                           });
                                         },
                                       ),
