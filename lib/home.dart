@@ -5,7 +5,13 @@ import 'package:todoapp/sqldb.dart';
 import 'addNotes.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  const Home({
+    super.key,
+    required this.dark,
+  });
+
+  final bool dark;
+
 
   @override
   State<Home> createState() => _HomeState();
@@ -13,6 +19,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   SqlDb sqlDb = SqlDb();
+  final ThemeData lightTheme = ThemeData.light();
+  final ThemeData darkTheme = ThemeData.dark();
+  late bool isDarkMode;
 
   Future<List<Map>> readData() async {
     List<Map> response = await sqlDb.readData("SELECT * FROM 'notes'");
@@ -20,141 +29,175 @@ class _HomeState extends State<Home> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isDarkMode = widget.dark;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("Home Page"),
-          /*actions: [
-            IconButton(
-                onPressed: () async {
-                  sqlDb.deleteDataBase();
-                  setState(() {});
-                },
-                icon: const Icon(Icons.delete)),
-          ],*/
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const AddNotes()));
-          },
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView(
-                  children: [
-                    FutureBuilder(
-                        future: readData(),
-                        builder: (BuildContext context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          if (snapshot.hasData) {
-                            if (snapshot.data!.isEmpty) {
+    return Theme(
+      data: isDarkMode ? darkTheme : lightTheme,
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Text("Home Page"),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isDarkMode = !isDarkMode;
+                    });
+                  },
+                  icon: Icon(Icons.lightbulb)),
+            ],
+            /*actions: [
+              IconButton(
+                  onPressed: () async {
+                    sqlDb.deleteDataBase();
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.delete)),
+            ],*/
+          ),
+          floatingActionButton: FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) =>
+                      AddNotes(
+                        themeData: isDarkMode == false ? lightTheme : darkTheme,
+                      )));
+            },
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView(
+                    children: [
+                      FutureBuilder(
+                          future: readData(),
+                          builder: (BuildContext context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
                               return const Center(
-                                child: Text("There is no data"),
+                                child: CircularProgressIndicator(),
                               );
                             }
-                            return ListView.builder(
-                              itemCount: snapshot.data != null
-                                  ? snapshot.data!.length
-                                  : 0,
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                var id = snapshot.data![index]["id"];
-                                var title = snapshot.data![index]["title"];
-                                var note = snapshot.data![index]["note"];
-                                var isdone = snapshot.data![index]["isDone"];
-                                bool isDone = isdone == 0 ? false : true;
+                            if (snapshot.hasData) {
+                              if (snapshot.data!.isEmpty) {
+                                return const Center(
+                                  child: Text("There is no data"),
+                                );
+                              }
+                              return ListView.builder(
+                                itemCount: snapshot.data != null
+                                    ? snapshot.data!.length
+                                    : 0,
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  var id = snapshot.data![index]["id"];
+                                  var title = snapshot.data![index]["title"];
+                                  var note = snapshot.data![index]["note"];
+                                  var isdone = snapshot.data![index]["isDone"];
+                                  bool isDone = isdone == 0 ? false : true;
 
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (context) => EditNote(
-                                                  id: id,
-                                                  title: title,
-                                                  note: note,
-                                                  isDone: isdone == 0
-                                                      ? false
-                                                      : true,
-                                                )));
-                                  },
-                                  child: Dismissible(
-                                    key: UniqueKey(),
-                                    background: Container(
-                                      color: Colors.red,
-                                      child: const Icon(Icons.delete,
-                                          color: Colors.white),
-                                    ),
-                                    onDismissed: (direction) async {
-                                      var id = snapshot.data![index]["id"];
-                                      var title =
-                                          snapshot.data![index]["title"];
-                                      var note = snapshot.data![index]["note"];
-                                      var data = sqlDb.readData(
-                                          "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
-                                      await sqlDb.deleteData(
-                                          "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
-                                      setState(() {});
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: const Text('Item dismissed'),
-                                        action: SnackBarAction(
-                                          label: 'Undo',
-                                          onPressed: () async {
-                                            // Undo the dismissal of the Dismissible widget
-                                            await sqlDb.insertData(
-                                                "INSERT INTO 'notes' ('id' , 'title' , 'note') VALUES ( '$id', '$title' , '$note')");
-                                            setState(() {});
+                                  return InkWell(
+                                    onTap: () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                          builder: (context) =>
+                                              EditNote(
+                                                themeData:
+                                                isDarkMode == false
+                                                    ? lightTheme
+                                                    : darkTheme,
+                                                id: id,
+                                                title: title,
+                                                note: note,
+                                                isDone: isdone == 0
+                                                    ? false
+                                                    : true,
+                                              )));
+                                    },
+                                    child: Dismissible(
+                                      key: UniqueKey(),
+                                      background: Container(
+                                        color: Colors.red,
+                                        child: const Icon(Icons.delete,
+                                            color: Colors.white),
+                                      ),
+                                      onDismissed: (direction) async {
+                                        var id = snapshot.data![index]["id"];
+                                        var title =
+                                        snapshot.data![index]["title"];
+                                        var note =
+                                        snapshot.data![index]["note"];
+                                        var data = sqlDb.readData(
+                                            "SELECT * FROM 'notes' WHERE id = '${snapshot
+                                                .data![index]["id"]}'");
+                                        await sqlDb.deleteData(
+                                            "DELETE FROM 'notes' WHERE id = '${snapshot
+                                                .data![index]["id"]}'");
+                                        setState(() {});
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: const Text('Item dismissed'),
+                                          action: SnackBarAction(
+                                            label: 'Undo',
+                                            onPressed: () async {
+                                              // Undo the dismissal of the Dismissible widget
+                                              await sqlDb.insertData(
+                                                  "INSERT INTO 'notes' ('id' , 'title' , 'note') VALUES ( '$id', '$title' , '$note')");
+                                              setState(() {});
+                                            },
+                                          ),
+                                        ));
+                                      },
+                                      child: ListTile(
+                                        leading: Checkbox(
+                                          value: isDone,
+                                          onChanged: (value) async {
+                                            await sqlDb.updateData(
+                                                "UPDATE 'notes' SET 'isDone' = ${value ==
+                                                    true
+                                                    ? 1
+                                                    : 0}  WHERE id = ${snapshot
+                                                    .data![index]["id"]}");
+                                            setState(() {
+                                              print(isDone);
+                                              isDone = value!;
+                                              print(isDone);
+                                            });
                                           },
                                         ),
-                                      ));
-                                    },
-                                    child: ListTile(
-                                      leading: Checkbox(
-                                        value: isDone,
-                                        onChanged: (value) async {
-                                          await sqlDb.updateData(
-                                              "UPDATE 'notes' SET 'isDone' = ${value == true ? 1 : 0}  WHERE id = ${snapshot.data![index]["id"]}");
-                                          setState(() {
-                                            print(isDone);
-                                            isDone = value!;
-                                            print(isDone);
-                                          });
-                                        },
-                                      ),
-                                      subtitle: Text(
-                                        snapshot.data![index]["note"]
-                                            .toString(),
-                                      ),
-                                      title: Text(
-                                        snapshot.data![index]["title"]
-                                            .toString(),
+                                        subtitle: Text(
+                                          snapshot.data![index]["note"]
+                                              .toString(),
+                                        ),
+                                        title: Text(
+                                          snapshot.data![index]["title"]
+                                              .toString(),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
+                                  );
+                                },
+                              );
+                            }
+                            return const Center(
+                              child: Text("Something Wrong"),
                             );
-                          }
-                          return const Center(
-                            child: Text("Something Wrong"),
-                          );
-                        }),
-                  ],
+                          }),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ));
+            ],
+          )),
+    );
   }
 }
