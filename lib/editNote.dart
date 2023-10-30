@@ -44,42 +44,75 @@ class _EditNoteState extends State<EditNote> {
       child: Scaffold(
         appBar: AppBar(
           title: Text("Edit Note"),
+          actions: [
+            Switch(
+                value: isdone,
+                onChanged: (value) {
+                  setState(() {
+                    isdone = value;
+                  });
+                }),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            await sqlDb.updateData(
+                "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1}  WHERE id = ${widget.id}");
+            Navigator.of(context).pop();
+          },
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          child: Icon(Icons.done),
         ),
         body: Container(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.all(5),
           child: ListView(
             children: [
               Form(
                 key: formstate,
                 child: Column(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    Switch(
-                        value: isdone,
-                        onChanged: (value) {
-                          setState(() {
-                            isdone = value;
-                          });
-                        }),
                     TextFormField(
-                      controller: noteController,
-                      decoration: InputDecoration(hintText: "note"),
+                      textInputAction: TextInputAction.next,
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        hintText: "note",
+                        border: InputBorder.none,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.transparent),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        fillColor: Colors.transparent,
+                        hintStyle: TextStyle(color: Colors.black12),
+                      ),
+                      cursorColor: Colors.black,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     TextFormField(
-                      controller: titleController,
-                      decoration: InputDecoration(hintText: "title"),
+                      controller: noteController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(20),
+                        hintText: "note",
+                        border: InputBorder.none,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.transparent),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        fillColor: Colors.transparent,
+                        hintStyle: TextStyle(color: Colors.black12),
+                      ),
+                      cursorColor: Colors.black,
+                      maxLines: null,
                     ),
                     Container(
                       height: 20,
-                    ),
-                    MaterialButton(
-                      onPressed: () async {
-                        await sqlDb.updateData(
-                            "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1}  WHERE id = ${widget.id}");
-                        Navigator.of(context).pop();
-                      },
-                      color: Colors.blue,
-                      textColor: Colors.white,
-                      child: Text("Submit Note"),
                     ),
                   ],
                 ),
