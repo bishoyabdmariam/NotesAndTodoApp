@@ -66,8 +66,7 @@ class _HomeState extends State<Home> {
             child: const Icon(Icons.add),
             onPressed: () {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) =>
-                      AddNotes(
+                  builder: (context) => AddNotes(
                         themeData: isDarkMode == false ? lightTheme : darkTheme,
                       )));
             },
@@ -102,6 +101,9 @@ class _HomeState extends State<Home> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
                                 itemBuilder: (context, index) {
+                                  var date = snapshot.data![index]["createdAt"];
+                                  print(date);
+                                  print(index);
                                   var id = snapshot.data![index]["id"];
                                   var title = snapshot.data![index]["title"];
                                   var note = snapshot.data![index]["note"];
@@ -112,19 +114,18 @@ class _HomeState extends State<Home> {
                                     onTap: () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
-                                          builder: (context) =>
-                                              EditNote(
-                                                themeData:
-                                                isDarkMode == false
-                                                    ? lightTheme
-                                                    : darkTheme,
-                                                id: id,
-                                                title: title,
-                                                note: note,
-                                                isDone: isdone == 0
-                                                    ? false
-                                                    : true,
-                                              )));
+                                              builder: (context) => EditNote(
+                                                    themeData:
+                                                        isDarkMode == false
+                                                            ? lightTheme
+                                                            : darkTheme,
+                                                    id: id,
+                                                    title: title,
+                                                    note: note,
+                                                    isDone: isdone == 0
+                                                        ? false
+                                                        : true,
+                                                  )));
                                     },
                                     child: Dismissible(
                                       key: UniqueKey(),
@@ -136,15 +137,13 @@ class _HomeState extends State<Home> {
                                       onDismissed: (direction) async {
                                         var id = snapshot.data![index]["id"];
                                         var title =
-                                        snapshot.data![index]["title"];
+                                            snapshot.data![index]["title"];
                                         var note =
-                                        snapshot.data![index]["note"];
+                                            snapshot.data![index]["note"];
                                         await sqlDb.readData(
-                                            "SELECT * FROM 'notes' WHERE id = '${snapshot
-                                                .data![index]["id"]}'");
+                                            "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
                                         await sqlDb.deleteData(
-                                            "DELETE FROM 'notes' WHERE id = '${snapshot
-                                                .data![index]["id"]}'");
+                                            "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
                                         setState(() {});
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
@@ -165,11 +164,7 @@ class _HomeState extends State<Home> {
                                           value: isDone,
                                           onChanged: (value) async {
                                             await sqlDb.updateData(
-                                                "UPDATE 'notes' SET 'isDone' = ${value ==
-                                                    true
-                                                    ? 1
-                                                    : 0}  WHERE id = ${snapshot
-                                                    .data![index]["id"]}");
+                                                "UPDATE 'notes' SET 'isDone' = ${value == true ? 1 : 0}  WHERE id = ${snapshot.data![index]["id"]}");
                                             setState(() {
                                               print(isDone);
                                               isDone = value!;
@@ -181,9 +176,19 @@ class _HomeState extends State<Home> {
                                           snapshot.data![index]["note"]
                                               .toString(),
                                         ),
-                                        title: Text(
-                                          snapshot.data![index]["title"]
-                                              .toString(),
+                                        title: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              snapshot.data![index]["title"]
+                                                  .toString(),
+                                            ),
+                                            Text(
+                                              snapshot.data![index]["createdAt"]
+                                                  .toString(),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
