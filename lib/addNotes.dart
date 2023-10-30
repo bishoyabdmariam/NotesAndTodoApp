@@ -36,6 +36,33 @@ class _AddNotesState extends State<AddNotes> {
       child: Scaffold(
         appBar: AppBar(
           title: Text("Add Note"),
+          actions: [
+            Switch(
+              value: isDone,
+              onChanged: (value) {
+                setState(() {
+                  isDone = value;
+                });
+              },
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            await sqlDb.insertData(
+                "INSERT INTO 'notes' ('title' , 'note' , 'isDone' ) VALUES ('${title.text}' , '${note.text}' , $isDone )");
+            setState(() {});
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => Home(
+                      dark: MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark
+                          ? true
+                          : false,
+                    )));
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
         ),
         body: Container(
           padding: EdgeInsets.all(10),
@@ -45,42 +72,44 @@ class _AddNotesState extends State<AddNotes> {
                   key: formstate,
                   child: Column(
                     children: [
-                      Switch(
-                        value: isDone,
-                        onChanged: (value) {
-                          setState(() {
-                            isDone = value;
-                          });
-                        },
-                      ),
                       TextFormField(
+                        textInputAction: TextInputAction.next,
                         controller: title,
-                        decoration: InputDecoration(hintText: "title"),
+                        decoration: InputDecoration(
+                          hintText: "title",
+                          hoverColor: Colors.green,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          fillColor: Colors.transparent,
+                          hintStyle: TextStyle(color: Colors.white),
+                        ),
+                        cursorColor: Colors.black,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       TextFormField(
                         controller: note,
-                        decoration: InputDecoration(hintText: "note"),
-                      ),
-                      Container(
-                        height: 20,
-                      ),
-                      MaterialButton(
-                        onPressed: () async {
-                          await sqlDb.insertData(
-                              "INSERT INTO 'notes' ('title' , 'note' , 'isDone' ) VALUES ('${title.text}' , '${note.text}' , $isDone )");
-                          Navigator.of(context)
-                              .pushReplacement(MaterialPageRoute(
-                                  builder: (context) => Home(
-                                        dark: MediaQuery.platformBrightnessOf(
-                                                    context) ==
-                                                Brightness.dark
-                                            ? true
-                                            : false,
-                                      )));
-                        },
-                        color: Colors.blue,
-                        textColor: Colors.white,
-                        child: Text("Submit Note"),
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(20),
+                          hintText: "note",
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          fillColor: Colors.transparent,
+                          hintStyle: TextStyle(color: Colors.white),
+                        ),
+                        cursorColor: Colors.black,
+                        maxLines: null,
                       ),
                     ],
                   ))

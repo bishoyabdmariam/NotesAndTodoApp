@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todoapp/home.dart';
 import 'package:todoapp/sqldb.dart';
 
 class EditNote extends StatefulWidget {
@@ -58,7 +59,15 @@ class _EditNoteState extends State<EditNote> {
           onPressed: () async {
             await sqlDb.updateData(
                 "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1}  WHERE id = ${widget.id}");
-            Navigator.of(context).pop();
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => Home(
+                dark:
+                    MediaQuery.platformBrightnessOf(context) == Brightness.dark
+                        ? true
+                        : false,
+              ),
+            ));
+            setState(() {});
           },
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
@@ -77,7 +86,7 @@ class _EditNoteState extends State<EditNote> {
                       textInputAction: TextInputAction.next,
                       controller: titleController,
                       decoration: InputDecoration(
-                        hintText: "note",
+                        hintText: "title",
                         border: InputBorder.none,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.transparent),

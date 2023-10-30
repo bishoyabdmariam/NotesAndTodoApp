@@ -23,7 +23,9 @@ class _HomeState extends State<Home> {
   late bool isDarkMode;
 
   Future<List<Map>> readData() async {
+    setState(() {});
     List<Map> response = await sqlDb.readData("SELECT * FROM 'notes'");
+
     return response;
   }
 
@@ -31,12 +33,12 @@ class _HomeState extends State<Home> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    readData();
     isDarkMode = widget.dark;
   }
 
   @override
   Widget build(BuildContext context) {
+    setState(() {});
     return Theme(
       data: isDarkMode ? darkTheme : lightTheme,
       child: Scaffold(
@@ -64,7 +66,8 @@ class _HomeState extends State<Home> {
             child: const Icon(Icons.add),
             onPressed: () {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => AddNotes(
+                  builder: (context) =>
+                      AddNotes(
                         themeData: isDarkMode == false ? lightTheme : darkTheme,
                       )));
             },
@@ -91,6 +94,7 @@ class _HomeState extends State<Home> {
                                   child: Text("There is no data"),
                                 );
                               }
+
                               return ListView.builder(
                                 itemCount: snapshot.data != null
                                     ? snapshot.data!.length
@@ -108,18 +112,19 @@ class _HomeState extends State<Home> {
                                     onTap: () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
-                                              builder: (context) => EditNote(
-                                                    themeData:
-                                                        isDarkMode == false
-                                                            ? lightTheme
-                                                            : darkTheme,
-                                                    id: id,
-                                                    title: title,
-                                                    note: note,
-                                                    isDone: isdone == 0
-                                                        ? false
-                                                        : true,
-                                                  )));
+                                          builder: (context) =>
+                                              EditNote(
+                                                themeData:
+                                                isDarkMode == false
+                                                    ? lightTheme
+                                                    : darkTheme,
+                                                id: id,
+                                                title: title,
+                                                note: note,
+                                                isDone: isdone == 0
+                                                    ? false
+                                                    : true,
+                                              )));
                                     },
                                     child: Dismissible(
                                       key: UniqueKey(),
@@ -131,13 +136,15 @@ class _HomeState extends State<Home> {
                                       onDismissed: (direction) async {
                                         var id = snapshot.data![index]["id"];
                                         var title =
-                                            snapshot.data![index]["title"];
+                                        snapshot.data![index]["title"];
                                         var note =
-                                            snapshot.data![index]["note"];
+                                        snapshot.data![index]["note"];
                                         await sqlDb.readData(
-                                            "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                            "SELECT * FROM 'notes' WHERE id = '${snapshot
+                                                .data![index]["id"]}'");
                                         await sqlDb.deleteData(
-                                            "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                            "DELETE FROM 'notes' WHERE id = '${snapshot
+                                                .data![index]["id"]}'");
                                         setState(() {});
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
@@ -158,7 +165,11 @@ class _HomeState extends State<Home> {
                                           value: isDone,
                                           onChanged: (value) async {
                                             await sqlDb.updateData(
-                                                "UPDATE 'notes' SET 'isDone' = ${value == true ? 1 : 0}  WHERE id = ${snapshot.data![index]["id"]}");
+                                                "UPDATE 'notes' SET 'isDone' = ${value ==
+                                                    true
+                                                    ? 1
+                                                    : 0}  WHERE id = ${snapshot
+                                                    .data![index]["id"]}");
                                             setState(() {
                                               print(isDone);
                                               isDone = value!;
