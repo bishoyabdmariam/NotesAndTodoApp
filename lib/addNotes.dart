@@ -20,6 +20,7 @@ class _AddNotesState extends State<AddNotes> {
   TextEditingController note = TextEditingController();
   TextEditingController title = TextEditingController();
   bool isDone = false;
+  late bool showAppBar;
 
   @override
   void dispose() {
@@ -31,22 +32,31 @@ class _AddNotesState extends State<AddNotes> {
 
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.of(context).viewInsets.bottom > 0 &&
+        MediaQuery.of(context).orientation.name == "landscape") {
+      showAppBar = false;
+    } else {
+      showAppBar = true;
+    }
+    setState(() {});
     return Theme(
       data: widget.themeData,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Add Note"),
-          actions: [
-            Switch(
-              value: isDone,
-              onChanged: (value) {
-                setState(() {
-                  isDone = value;
-                });
-              },
-            ),
-          ],
-        ),
+        appBar: showAppBar
+            ? AppBar(
+                title: const Text("Add Note"),
+                actions: [
+                  Switch(
+                    value: isDone,
+                    onChanged: (value) {
+                      setState(() {
+                        isDone = value;
+                      });
+                    },
+                  ),
+                ],
+              )
+            : null,
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             await sqlDb.insertData(
