@@ -25,6 +25,7 @@ class EditNote extends StatefulWidget {
 class _EditNoteState extends State<EditNote> {
   SqlDb sqlDb = SqlDb();
   late bool isdone;
+  late bool showAppBar;
 
   GlobalKey<FormState> formState = GlobalKey();
   TextEditingController noteController = TextEditingController();
@@ -40,10 +41,21 @@ class _EditNoteState extends State<EditNote> {
 
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery
+        .of(context)
+        .orientation
+        .name == "landscape") {
+      showAppBar = false;
+    } else {
+      showAppBar = true;
+    }
+    setState(() {
+
+    });
     return Theme(
       data: widget.themeData,
       child: Scaffold(
-        appBar: AppBar(
+        appBar: showAppBar ? AppBar(
           title: const Text("Edit Note"),
           actions: [
             Switch(
@@ -54,18 +66,24 @@ class _EditNoteState extends State<EditNote> {
                   });
                 }),
           ],
-        ),
+        ) : null,
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             await sqlDb.updateData(
-                "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1} , createdAt = '${DateTime.now().toIso8601String()}' WHERE id = ${widget.id}");
+                "UPDATE 'notes' SET note = '${noteController
+                    .text}' , title = '${titleController
+                    .text}' , isDone = ${isdone == false
+                    ? 0
+                    : 1} , createdAt = '${DateTime.now()
+                    .toIso8601String()}' WHERE id = ${widget.id}");
             Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => Home(
-                dark:
+              builder: (context) =>
+                  Home(
+                    dark:
                     MediaQuery.platformBrightnessOf(context) == Brightness.dark
                         ? true
                         : false,
-              ),
+                  ),
             ));
             setState(() {});
           },

@@ -23,6 +23,7 @@ class _HomeState extends State<Home> {
   final ThemeData lightTheme = ThemeData.light();
   final ThemeData darkTheme = ThemeData.dark();
   late bool isDarkMode;
+  late bool showAppBar;
 
   Future<List<Map>> readData() async {
     setState(() {});
@@ -74,11 +75,24 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery
+        .of(context)
+        .orientation
+        .name);
+    if (MediaQuery
+        .of(context)
+        .orientation
+        .name == "landscape") {
+      showAppBar = false;
+    } else {
+      showAppBar = true;
+    }
     setState(() {});
     return Theme(
       data: isDarkMode ? darkTheme : lightTheme,
       child: Scaffold(
-          appBar: AppBar(
+          appBar:
+          AppBar(
             title: const Text("Home Page"),
             actions: [
               IconButton(
@@ -97,18 +111,20 @@ class _HomeState extends State<Home> {
                   },
                   icon: const Icon(Icons.delete)),
             ],*/
-          ),
+          )
+          ,
           floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => AddNotes(
+                  builder: (context) =>
+                      AddNotes(
                         themeData: isDarkMode == false ? lightTheme : darkTheme,
                       )));
             },
           ),
           floatingActionButtonLocation:
-              FloatingActionButtonLocation.endContained,
+          FloatingActionButtonLocation.endContained,
           body: Column(
             children: [
               Expanded(
@@ -149,18 +165,19 @@ class _HomeState extends State<Home> {
                                     onTap: () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
-                                              builder: (context) => EditNote(
-                                                    themeData:
-                                                        isDarkMode == false
-                                                            ? lightTheme
-                                                            : darkTheme,
-                                                    id: id,
-                                                    title: title,
-                                                    note: note,
-                                                    isDone: isdone == 0
-                                                        ? false
-                                                        : true,
-                                                  )));
+                                          builder: (context) =>
+                                              EditNote(
+                                                themeData:
+                                                isDarkMode == false
+                                                    ? lightTheme
+                                                    : darkTheme,
+                                                id: id,
+                                                title: title,
+                                                note: note,
+                                                isDone: isdone == 0
+                                                    ? false
+                                                    : true,
+                                              )));
                                     },
                                     child: Dismissible(
                                       key: UniqueKey(),
@@ -172,17 +189,19 @@ class _HomeState extends State<Home> {
                                       onDismissed: (direction) async {
                                         var id = snapshot.data![index]["id"];
                                         var title =
-                                            snapshot.data![index]["title"];
+                                        snapshot.data![index]["title"];
                                         var note =
-                                            snapshot.data![index]["note"];
+                                        snapshot.data![index]["note"];
                                         var isDone =
-                                            snapshot.data![index]["isDone"];
+                                        snapshot.data![index]["isDone"];
                                         var time =
-                                            snapshot.data![index]["createdAt"];
+                                        snapshot.data![index]["createdAt"];
                                         await sqlDb.readData(
-                                            "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                            "SELECT * FROM 'notes' WHERE id = '${snapshot
+                                                .data![index]["id"]}'");
                                         await sqlDb.deleteData(
-                                            "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                            "DELETE FROM 'notes' WHERE id = '${snapshot
+                                                .data![index]["id"]}'");
                                         setState(() {});
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
@@ -203,7 +222,11 @@ class _HomeState extends State<Home> {
                                           value: isDone,
                                           onChanged: (value) async {
                                             await sqlDb.updateData(
-                                                "UPDATE 'notes' SET 'isDone' = ${value == true ? 1 : 0}  WHERE id = ${snapshot.data![index]["id"]}");
+                                                "UPDATE 'notes' SET 'isDone' = ${value ==
+                                                    true
+                                                    ? 1
+                                                    : 0}  WHERE id = ${snapshot
+                                                    .data![index]["id"]}");
                                             setState(() {
                                               isDone = value!;
                                             });
@@ -215,7 +238,7 @@ class _HomeState extends State<Home> {
                                         ),
                                         title: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
                                               snapshot.data![index]["title"]
