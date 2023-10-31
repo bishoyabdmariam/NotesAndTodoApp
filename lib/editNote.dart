@@ -85,6 +85,7 @@ class _EditNoteState extends State<EditNote> {
                     TextFormField(
                       textInputAction: TextInputAction.next,
                       controller: titleController,
+                      keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
                         hintText: "title",
                         border: InputBorder.none,
@@ -100,6 +101,7 @@ class _EditNoteState extends State<EditNote> {
                       cursorColor: Colors.black,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Joypixels',
                       ),
                     ),
                     TextFormField(
