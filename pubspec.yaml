@@ -38,6 +38,8 @@ dependencies:
   sqflite: ^2.3.0
   shared_preferences: ^2.2.1
   build_runner: ^2.3.1
+  intl: ^0.18.1
+  ntp: ^2.0.0
 
 dev_dependencies:
   flutter_test:

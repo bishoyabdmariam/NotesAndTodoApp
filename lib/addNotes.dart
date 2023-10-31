@@ -50,7 +50,7 @@ class _AddNotesState extends State<AddNotes> {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             await sqlDb.insertData(
-                "INSERT INTO 'notes' ('title' , 'note' , 'isDone' ) VALUES ('${title.text}' , '${note.text}' , $isDone )");
+                "INSERT INTO 'notes' ('title', 'note', 'isDone', 'createdAt') VALUES ('${title.text}', '${note.text}', $isDone, '${DateTime.now().toIso8601String()}')");
             setState(() {});
             Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (context) => Home(
@@ -64,11 +64,12 @@ class _AddNotesState extends State<AddNotes> {
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
         ),
-        body: Container(
-          padding: EdgeInsets.all(10),
-          child: ListView(
-            children: [
-              Form(
+        body: SafeArea(
+          child: Container(
+            padding: EdgeInsets.all(10),
+            child: ListView(
+              children: [
+                Form(
                   key: formstate,
                   child: Column(
                     children: [
@@ -112,8 +113,10 @@ class _AddNotesState extends State<AddNotes> {
                         maxLines: null,
                       ),
                     ],
-                  ))
-            ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

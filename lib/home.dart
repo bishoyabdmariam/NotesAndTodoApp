@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:todoapp/editNote.dart';
 import 'package:todoapp/sqldb.dart';
 
@@ -27,6 +28,25 @@ class _HomeState extends State<Home> {
     List<Map> response = await sqlDb.readData("SELECT * FROM 'notes'");
 
     return response;
+  }
+
+  String formatDateTime(String dateTimeString) {
+    DateTime dateTime = DateTime.parse(dateTimeString);
+
+    // Check if the date is today
+    if (isToday(dateTime)) {
+      return DateFormat.jm().format(dateTime); // Show only time
+    } else {
+      return DateFormat.yMd().format(dateTime); // Show full date
+    }
+  }
+
+  bool isToday(DateTime dateTime) {
+    DateTime now = DateTime.now();
+    print(now);
+    return dateTime.year == now.year &&
+        dateTime.month == now.month &&
+        dateTime.day == now.day;
   }
 
   @override
@@ -71,6 +91,8 @@ class _HomeState extends State<Home> {
                       )));
             },
           ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.endContained,
           body: Column(
             children: [
               Expanded(
@@ -140,6 +162,10 @@ class _HomeState extends State<Home> {
                                             snapshot.data![index]["title"];
                                         var note =
                                             snapshot.data![index]["note"];
+                                        var isDone =
+                                            snapshot.data![index]["isDone"];
+                                        var time =
+                                            snapshot.data![index]["createdAt"];
                                         await sqlDb.readData(
                                             "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
                                         await sqlDb.deleteData(
@@ -153,7 +179,7 @@ class _HomeState extends State<Home> {
                                             onPressed: () async {
                                               // Undo the dismissal of the Dismissible widget
                                               await sqlDb.insertData(
-                                                  "INSERT INTO 'notes' ('id' , 'title' , 'note') VALUES ( '$id', '$title' , '$note')");
+                                                  "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time')");
                                               setState(() {});
                                             },
                                           ),
@@ -185,8 +211,8 @@ class _HomeState extends State<Home> {
                                                   .toString(),
                                             ),
                                             Text(
-                                              snapshot.data![index]["createdAt"]
-                                                  .toString(),
+                                              formatDateTime(snapshot
+                                                  .data![index]["createdAt"]),
                                             ),
                                           ],
                                         ),
@@ -203,6 +229,9 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
+              ),
+              SizedBox(
+                height: 60,
               ),
             ],
           )),

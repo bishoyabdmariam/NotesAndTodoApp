@@ -58,7 +58,7 @@ class _EditNoteState extends State<EditNote> {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             await sqlDb.updateData(
-                "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1}  WHERE id = ${widget.id}");
+                "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1} , createdAt = '${DateTime.now().toIso8601String()}' WHERE id = ${widget.id}");
             Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => Home(
                 dark:

@@ -17,7 +17,7 @@ class SqlDb {
     String databasePath = await getDatabasesPath();
     String path = join(databasePath, "bosh.db");
     Database myDb = await openDatabase(path,
-        onCreate: _onCreate, version: 11, onUpgrade: _onUpgrade);
+        onCreate: _onCreate, version: 13, onUpgrade: _onUpgrade);
     return myDb;
   }
 
@@ -39,8 +39,8 @@ class SqlDb {
 
   _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Add the isDone column to the notes table.
-    /*await db.execute(
-        */ /*        'UPDATE notes SET createdAt = "2023-10-31 19:11:38" WHERE createdAt IS NULL'*/ /*);*/
+    await db.execute(
+        'UPDATE notes SET createdAt = "2023-10-31 19:11:38" WHERE createdAt IS NULL');
   }
 
   readData(String sql) async {
