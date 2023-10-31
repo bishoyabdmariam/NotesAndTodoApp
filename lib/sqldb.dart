@@ -29,7 +29,6 @@ class SqlDb {
         "note" TEXT NOT NULL , 
       )
     ''');
-    print("Create database");
   }
 
   /*_onUpgrade(Database myDb, int oldVersion, int newVersion) async {

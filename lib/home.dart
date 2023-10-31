@@ -43,7 +43,6 @@ class _HomeState extends State<Home> {
 
   bool isToday(DateTime dateTime) {
     DateTime now = DateTime.now();
-    print(now);
     return dateTime.year == now.year &&
         dateTime.month == now.month &&
         dateTime.day == now.day;
@@ -71,7 +70,7 @@ class _HomeState extends State<Home> {
                       isDarkMode = !isDarkMode;
                     });
                   },
-                  icon: Icon(Icons.lightbulb)),
+                  icon: const Icon(Icons.lightbulb)),
             ],
             /*actions: [
               IconButton(
@@ -123,9 +122,6 @@ class _HomeState extends State<Home> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
                                 itemBuilder: (context, index) {
-                                  var date = snapshot.data![index]["createdAt"];
-                                  print(date);
-                                  print(index);
                                   var id = snapshot.data![index]["id"];
                                   var title = snapshot.data![index]["title"];
                                   var note = snapshot.data![index]["note"];
@@ -192,9 +188,7 @@ class _HomeState extends State<Home> {
                                             await sqlDb.updateData(
                                                 "UPDATE 'notes' SET 'isDone' = ${value == true ? 1 : 0}  WHERE id = ${snapshot.data![index]["id"]}");
                                             setState(() {
-                                              print(isDone);
                                               isDone = value!;
-                                              print(isDone);
                                             });
                                           },
                                         ),
@@ -230,7 +224,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 60,
               ),
             ],

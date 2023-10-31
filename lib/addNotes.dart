@@ -16,7 +16,7 @@ class AddNotes extends StatefulWidget {
 
 class _AddNotesState extends State<AddNotes> {
   SqlDb sqlDb = SqlDb();
-  GlobalKey<FormState> formstate = GlobalKey();
+  GlobalKey<FormState> formState = GlobalKey();
   TextEditingController note = TextEditingController();
   TextEditingController title = TextEditingController();
   bool isDone = false;
@@ -35,7 +35,7 @@ class _AddNotesState extends State<AddNotes> {
       data: widget.themeData,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Add Note"),
+          title: const Text("Add Note"),
           actions: [
             Switch(
               value: isDone,
@@ -60,23 +60,23 @@ class _AddNotesState extends State<AddNotes> {
                           : false,
                     )));
           },
-          child: Icon(Icons.add),
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
+          child: const Icon(Icons.add),
         ),
         body: SafeArea(
           child: Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: ListView(
               children: [
                 Form(
-                  key: formstate,
+                  key: formState,
                   child: Column(
                     children: [
                       TextFormField(
                         textInputAction: TextInputAction.next,
                         controller: title,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: "title",
                           hoverColor: Colors.green,
                           border: InputBorder.none,
@@ -90,13 +90,13 @@ class _AddNotesState extends State<AddNotes> {
                           hintStyle: TextStyle(color: Colors.white),
                         ),
                         cursorColor: Colors.black,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       TextFormField(
                         controller: note,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           contentPadding: EdgeInsets.all(20),
                           hintText: "note",
                           border: InputBorder.none,

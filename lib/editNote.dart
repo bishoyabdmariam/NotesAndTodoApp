@@ -26,7 +26,7 @@ class _EditNoteState extends State<EditNote> {
   SqlDb sqlDb = SqlDb();
   late bool isdone;
 
-  GlobalKey<FormState> formstate = GlobalKey();
+  GlobalKey<FormState> formState = GlobalKey();
   TextEditingController noteController = TextEditingController();
   TextEditingController titleController = TextEditingController();
 
@@ -44,7 +44,7 @@ class _EditNoteState extends State<EditNote> {
       data: widget.themeData,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Edit Note"),
+          title: const Text("Edit Note"),
           actions: [
             Switch(
                 value: isdone,
@@ -71,21 +71,21 @@ class _EditNoteState extends State<EditNote> {
           },
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
-          child: Icon(Icons.done),
+          child: const Icon(Icons.done),
         ),
         body: Container(
-          padding: EdgeInsets.all(5),
+          padding: const EdgeInsets.all(5),
           child: ListView(
             children: [
               Form(
-                key: formstate,
+                key: formState,
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     TextFormField(
                       textInputAction: TextInputAction.next,
                       controller: titleController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: "title",
                         border: InputBorder.none,
                         enabledBorder: OutlineInputBorder(
@@ -98,13 +98,13 @@ class _EditNoteState extends State<EditNote> {
                         hintStyle: TextStyle(color: Colors.black12),
                       ),
                       cursorColor: Colors.black,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextFormField(
                       controller: noteController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         contentPadding: EdgeInsets.all(20),
                         hintText: "note",
                         border: InputBorder.none,
