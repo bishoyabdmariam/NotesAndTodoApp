@@ -197,19 +197,24 @@ class _HomeState extends State<Home> {
                                     setState(() {});
                                     ScaffoldMessenger.of(context)
                                         .clearSnackBars();
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                      content: const Text('Item dismissed'),
-                                      action: SnackBarAction(
-                                        label: 'Undo',
-                                        onPressed: () async {
-                                          // Undo the dismissal of the Dismissible widget
-                                          await sqlDb.insertData(
-                                              "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time')");
-                                          setState(() {});
-                                        },
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Row(
+                                          children: [
+                                            Text('Item dismissed'),
+                                            SnackBarAction(
+                                              label: 'Undo',
+                                              onPressed: () async {
+                                                // Undo the dismissal of the Dismissible widget
+                                                await sqlDb.insertData(
+                                                    "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time')");
+                                                setState(() {});
+                                              },
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ));
+                                    );
                                   },
                                   child: ListTile(
                                     leading: Checkbox(
