@@ -148,7 +148,7 @@ class _HomeState extends State<Home> {
                         if (snapshot.hasData) {
                           if (snapshot.data!.isEmpty) {
                             return const Center(
-                              child: Text("There is no data"),
+                              child: Text("There is no notes Try add some"),
                             );
                           }
 
@@ -195,6 +195,8 @@ class _HomeState extends State<Home> {
                                     await sqlDb.deleteData(
                                         "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
                                     setState(() {});
+                                    ScaffoldMessenger.of(context)
+                                        .clearSnackBars();
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(SnackBar(
                                       content: const Text('Item dismissed'),
@@ -244,7 +246,9 @@ class _HomeState extends State<Home> {
                           );
                         }
                         return const Center(
-                          child: Text("Something Wrong"),
+                          child: Text(
+                            "Something Went Wrong please Contact us on 01202089993",
+                          ),
                         );
                       }),
                 ],
