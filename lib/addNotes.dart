@@ -62,6 +62,10 @@ class _AddNotesState extends State<AddNotes> {
           setState(() {});
           Navigator.of(context)
               .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
+
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text("Note Added Correctly")));
         },
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,

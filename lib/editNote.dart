@@ -53,7 +53,13 @@ class _EditNoteState extends State<EditNote> {
               actions: [
                 Switch(
                     value: isdone,
+                    activeColor: Colors.green,
                     onChanged: (value) {
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              "Note Marked as ${isdone == true ? 'To Be Done' : 'Done'}")));
+
                       setState(() {
                         isdone = value;
                       });
@@ -68,6 +74,9 @@ class _EditNoteState extends State<EditNote> {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => Home(),
           ));
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text("Note Edited Correctly")));
           setState(() {});
         },
         backgroundColor: Colors.blue,
