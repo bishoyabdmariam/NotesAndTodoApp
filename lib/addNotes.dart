@@ -3,12 +3,7 @@ import 'package:todoapp/home.dart';
 import 'package:todoapp/sqldb.dart';
 
 class AddNotes extends StatefulWidget {
-  const AddNotes({
-    super.key,
-    required this.themeData,
-  });
-
-  final ThemeData themeData;
+  const AddNotes({super.key});
 
   @override
   State<AddNotes> createState() => _AddNotesState();
@@ -39,94 +34,86 @@ class _AddNotesState extends State<AddNotes> {
       showAppBar = true;
     }
     setState(() {});
-    return Theme(
-      data: widget.themeData,
-      child: Scaffold(
-        appBar: showAppBar
-            ? AppBar(
-                title: const Text("Add Note"),
-                actions: [
-                  Switch(
-                    value: isDone,
-                    onChanged: (value) {
-                      setState(() {
-                        isDone = value;
-                      });
-                    },
-                  ),
-                ],
-              )
-            : null,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            await sqlDb.insertData(
-                "INSERT INTO 'notes' ('title', 'note', 'isDone', 'createdAt') VALUES ('${title.text}', '${note.text}', $isDone, '${DateTime.now().toIso8601String()}')");
-            setState(() {});
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => Home(
-                      dark: MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark
-                          ? true
-                          : false,
-                    )));
-          },
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          child: const Icon(Icons.add),
-        ),
-        body: SafeArea(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: ListView(
-              children: [
-                Form(
-                  key: formState,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        textInputAction: TextInputAction.next,
-                        controller: title,
-                        decoration: const InputDecoration(
-                          hintText: "title",
-                          hoverColor: Colors.green,
-                          border: InputBorder.none,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.transparent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          fillColor: Colors.transparent,
-                          hintStyle: TextStyle(color: Colors.white),
-                        ),
-                        cursorColor: Colors.black,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextFormField(
-                        controller: note,
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.all(20),
-                          hintText: "note",
-                          border: InputBorder.none,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.transparent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          fillColor: Colors.transparent,
-                          hintStyle: TextStyle(color: Colors.white),
-                        ),
-                        cursorColor: Colors.black,
-                        maxLines: null,
-                      ),
-                    ],
-                  ),
+    return Scaffold(
+      appBar: showAppBar
+          ? AppBar(
+              title: const Text("Add Note"),
+              actions: [
+                Switch(
+                  value: isDone,
+                  onChanged: (value) {
+                    setState(() {
+                      isDone = value;
+                    });
+                  },
                 ),
               ],
-            ),
+            )
+          : null,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await sqlDb.insertData(
+              "INSERT INTO 'notes' ('title', 'note', 'isDone', 'createdAt') VALUES ('${title.text}', '${note.text}', $isDone, '${DateTime.now().toIso8601String()}')");
+          setState(() {});
+          Navigator.of(context)
+              .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
+        },
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
+      ),
+      body: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: ListView(
+            children: [
+              Form(
+                key: formState,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      textInputAction: TextInputAction.next,
+                      controller: title,
+                      decoration: const InputDecoration(
+                        hintText: "title",
+                        hoverColor: Colors.green,
+                        border: InputBorder.none,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.transparent),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        fillColor: Colors.transparent,
+                        hintStyle: TextStyle(color: Colors.white),
+                      ),
+                      cursorColor: Colors.black,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextFormField(
+                      controller: note,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.all(20),
+                        hintText: "note",
+                        border: InputBorder.none,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.transparent),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        fillColor: Colors.transparent,
+                        hintStyle: TextStyle(color: Colors.white),
+                      ),
+                      cursorColor: Colors.black,
+                      maxLines: null,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
