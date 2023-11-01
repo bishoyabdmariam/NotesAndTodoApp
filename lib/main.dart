@@ -10,37 +10,35 @@ class ThemeHelper {
     prefs.setBool('isDark', isDark);
   }
 
-  static Future<bool> getTheme() async {
+  static Future<bool?> getTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isDark') ??
-        false; // Returning false as default (light) theme
+    bool? storedTheme = prefs.getBool('isDark');
+    return storedTheme;
   }
 }
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    /*print(MediaQuery.platformBrightnessOf(context) == Brightness.dark
-        ? true
-        : false);*/
-    return FutureBuilder(
+    return FutureBuilder<bool?>(
       future: ThemeHelper.getTheme(),
       builder: (context, snapshot) {
-        bool isDark =
-            snapshot.data ?? false; // Using false as default (light) theme
+        bool isDark = snapshot.data ?? false;
 
-        return MaterialApp(
-          theme: isDark ? ThemeData.dark() : ThemeData.light(),
-          home: Home(),
-        );
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MaterialApp(
+            theme: isDark ? ThemeData.dark() : ThemeData.light(),
+            home: Home(),
+          );
+        } else {
+          return CircularProgressIndicator(); // Or any loading indicator
+        }
       },
     );
   }
@@ -56,15 +54,14 @@ class HomeScreen extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            // Toggle theme
             ThemeHelper.getTheme().then((isDark) {
-              ThemeHelper.setTheme(!isDark).then((_) {
-                // Reload the app after setting the theme
+              ThemeHelper.setTheme(!(isDark ?? false)).then((_) {
                 runApp(MyApp());
+                // You might consider updating the current screen
               });
             });
           },
-          child: Text('Change Theme '),
+          child: Text('Change Theme'),
         ),
       ),
     );
