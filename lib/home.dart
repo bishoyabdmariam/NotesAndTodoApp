@@ -102,7 +102,7 @@ class _HomeState extends State<Home> {
                 color: Colors.blue,
               ),
               child: Text(
-                'Drawer Header',
+                'Notes App',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
