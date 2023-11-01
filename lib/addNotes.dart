@@ -40,8 +40,13 @@ class _AddNotesState extends State<AddNotes> {
               title: const Text("Add Note"),
               actions: [
                 Switch(
+                  activeColor: Colors.green,
                   value: isDone,
                   onChanged: (value) {
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                            "Note Marked as ${isDone == true ? 'To Be Done' : 'Done'}")));
                     setState(() {
                       isDone = value;
                     });
@@ -85,7 +90,7 @@ class _AddNotesState extends State<AddNotes> {
                           borderSide: BorderSide.none,
                         ),
                         fillColor: Colors.transparent,
-                        hintStyle: TextStyle(color: Colors.white),
+                        hintStyle: TextStyle(color: Colors.green),
                       ),
                       cursorColor: Colors.black,
                       style: const TextStyle(
@@ -105,7 +110,7 @@ class _AddNotesState extends State<AddNotes> {
                           borderSide: BorderSide.none,
                         ),
                         fillColor: Colors.transparent,
-                        hintStyle: TextStyle(color: Colors.white),
+                        hintStyle: TextStyle(color: Colors.green),
                       ),
                       cursorColor: Colors.black,
                       maxLines: null,
