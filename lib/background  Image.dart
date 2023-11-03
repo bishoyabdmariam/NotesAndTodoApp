@@ -26,12 +26,28 @@ class _BackgroundImageAppState extends State<BackgroundImageApp> {
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("BackGround Image has been selected correctly"),
+          content: Text("Background Image has been selected correctly"),
         ),
       );
       Navigator.of(context)
           .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
     }
+  }
+
+  Future<void> clearImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('backgroundImagePath');
+    setState(() {
+      backgroundImage = null;
+    });
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Background Image has been cleared"),
+      ),
+    );
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
   }
 
   @override
@@ -45,13 +61,25 @@ class _BackgroundImageAppState extends State<BackgroundImageApp> {
       appBar: AppBar(
         title: Text('Background Image App'),
       ),
-      body: Container(
-        child: Center(
-          child: ElevatedButton(
-            onPressed: getImageFromGallery,
-            child: Text(
-              backgroundImage != null ? 'Select another Image' : 'Select Image',
-            ),
+      body: Center(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: clearImage,
+                child: Text('Clear Background Image'),
+              ),
+              ElevatedButton(
+                onPressed: getImageFromGallery,
+                child: Text(
+                  backgroundImage != null
+                      ? 'Select another Image'
+                      : 'Select Image',
+                ),
+              ),
+            ],
           ),
         ),
       ),
