@@ -39,7 +39,34 @@ class _AddNotesState extends State<AddNotes> {
           ? AppBar(
               title: const Text("Add Note"),
               actions: [
-                Switch(
+                Container(
+                  width: 70,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: InkWell(
+                      child: isDone
+                          ? Icon(
+                              Icons.check,
+                              color: Colors.green,
+                            )
+                          : Icon(
+                              Icons.crop_square,
+                              color: Colors.red,
+                            ),
+                      onTap: () async {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                "Note Marked as ${isDone == true ? 'To Be Done' : 'Done'}")));
+                        setState(() {
+                          isDone = !isDone;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+
+                /*Switch(
                   activeColor: Colors.green,
                   value: isDone,
                   onChanged: (value) {
@@ -51,21 +78,23 @@ class _AddNotesState extends State<AddNotes> {
                       isDone = value;
                     });
                   },
-                ),
+                ),*/
               ],
             )
           : null,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await sqlDb.insertData(
-              "INSERT INTO 'notes' ('title', 'note', 'isDone', 'createdAt') VALUES ('${title.text}', '${note.text}', $isDone, '${DateTime.now().toIso8601String()}')");
-          setState(() {});
-          Navigator.of(context)
-              .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
+          if (formState.currentState!.validate()) {
+            await sqlDb.insertData(
+                "INSERT INTO 'notes' ('title', 'note', 'isDone', 'createdAt') VALUES ('${title.text}', '${note.text}', $isDone, '${DateTime.now().toIso8601String()}')");
+            setState(() {});
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => Home()));
 
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("Note Added Correctly")));
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text("Note Added Correctly")));
+          }
         },
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
@@ -81,6 +110,14 @@ class _AddNotesState extends State<AddNotes> {
                 child: Column(
                   children: [
                     TextFormField(
+                      validator: (value) {
+                        if (value == "") {
+                          return 'Please enter title';
+                        } else if (value!.trim().isEmpty) {
+                          return "Spaces is not considered as a valid title , Please enter a valid one";
+                        }
+                        return null; // Return null if the input is valid
+                      },
                       textInputAction: TextInputAction.next,
                       controller: title,
                       decoration: const InputDecoration(
@@ -102,6 +139,14 @@ class _AddNotesState extends State<AddNotes> {
                       ),
                     ),
                     TextFormField(
+                      validator: (value) {
+                        if (value == "") {
+                          return 'Please enter note';
+                        } else if (value!.trim().isEmpty) {
+                          return "Spaces is not considered as a valid note , Please enter a valid one";
+                        }
+                        return null; // Return null if the input is valid
+                      },
                       controller: note,
                       decoration: const InputDecoration(
                         contentPadding: EdgeInsets.all(20),

@@ -93,6 +93,14 @@ class _EditNoteState extends State<EditNote> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   TextFormField(
+                    validator: (value) {
+                      if (value == "") {
+                        return 'you have cleared the title';
+                      } else if (value!.trim().isEmpty) {
+                        return "Spaces is not considered as a valid title , Please enter a valid one";
+                      }
+                      return null; // Return null if the input is valid
+                    },
                     textInputAction: TextInputAction.next,
                     controller: titleController,
                     keyboardType: TextInputType.text,
@@ -115,6 +123,14 @@ class _EditNoteState extends State<EditNote> {
                     ),
                   ),
                   TextFormField(
+                    validator: (value) {
+                      if (value == "") {
+                        return 'You have cleared the note!';
+                      } else if (value!.trim().isEmpty) {
+                        return "Spaces is not considered as a valid note , Please enter a valid one!";
+                      }
+                      return null; // Return null if the input is valid
+                    },
                     controller: noteController,
                     decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(20),

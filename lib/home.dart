@@ -20,7 +20,8 @@ class _HomeState extends State<Home> {
 
   Future<List<Map>> readData() async {
     setState(() {});
-    List<Map> response = await sqlDb.readData("SELECT * FROM 'notes'");
+    List<Map> response =
+        await sqlDb.readData("SELECT * FROM 'notes' ORDER BY id DESC");
 
     return response;
   }
@@ -71,7 +72,7 @@ class _HomeState extends State<Home> {
     setState(() {});
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home Page"),
+        title: const Text("Notes"),
 
         /*
             actions: [
@@ -97,7 +98,7 @@ class _HomeState extends State<Home> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
@@ -178,9 +179,29 @@ class _HomeState extends State<Home> {
                                 child: Dismissible(
                                   key: UniqueKey(),
                                   background: Container(
-                                    color: Colors.red,
-                                    child: const Icon(Icons.delete,
-                                        color: Colors.white),
+                                    color: Colors.red[300],
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(.5),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Delete note",
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          Icon(
+                                            Icons.delete,
+                                            color: Colors.white,
+                                            size: 30,
+                                          ),
+                                          Text(
+                                            "Delete note",
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                   onDismissed: (direction) async {
                                     var id = snapshot.data![index]["id"];
@@ -201,7 +222,7 @@ class _HomeState extends State<Home> {
                                       SnackBar(
                                         content: Row(
                                           children: [
-                                            Text('Item dismissed'),
+                                            const Text('Note dismissed'),
                                             SnackBarAction(
                                               label: 'Undo',
                                               onPressed: () async {
@@ -217,7 +238,25 @@ class _HomeState extends State<Home> {
                                     );
                                   },
                                   child: ListTile(
-                                    leading: Checkbox(
+                                    leading: InkWell(
+                                      child: isDone
+                                          ? const Icon(
+                                              Icons.check,
+                                              color: Colors.green,
+                                            )
+                                          : const Icon(
+                                              Icons.crop_square,
+                                              color: Colors.red,
+                                            ),
+                                      onTap: () async {
+                                        await sqlDb.updateData(
+                                            "UPDATE 'notes' SET 'isDone' = ${isDone == true ? 0 : 1}  WHERE id = ${snapshot.data![index]["id"]}");
+                                        setState(() {
+                                          isDone = !isDone;
+                                        });
+                                      },
+                                    ),
+                                    /*Checkbox(
                                       value: isDone,
                                       onChanged: (value) async {
                                         await sqlDb.updateData(
@@ -226,7 +265,7 @@ class _HomeState extends State<Home> {
                                           isDone = value!;
                                         });
                                       },
-                                    ),
+                                    ),*/
                                     subtitle: Text(
                                       snapshot.data![index]["note"].toString(),
                                     ),
