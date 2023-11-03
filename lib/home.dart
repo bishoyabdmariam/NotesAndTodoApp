@@ -26,7 +26,7 @@ class _HomeState extends State<Home> {
   Future<List<Map>> readData() async {
     setState(() {});
     List<Map> response =
-        await sqlDb.readData("SELECT * FROM 'notes' ORDER BY id DESC");
+    await sqlDb.readData("SELECT * FROM 'notes' ORDER BY id DESC");
 
     return response;
   }
@@ -160,9 +160,9 @@ class _HomeState extends State<Home> {
         decoration: BoxDecoration(
           image: backgroundImage != null
               ? DecorationImage(
-                  image: FileImage(backgroundImage!),
-                  fit: BoxFit.fill,
-                )
+            image: FileImage(backgroundImage!),
+            fit: BoxFit.fill,
+          )
               : null,
         ),
         child: Column(
@@ -205,14 +205,15 @@ class _HomeState extends State<Home> {
                                   onTap: () {
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
-                                            builder: (context) => EditNote(
-                                                  id: id,
-                                                  title: title,
-                                                  note: note,
-                                                  isDone: isdone == 0
-                                                      ? false
-                                                      : true,
-                                                )));
+                                        builder: (context) =>
+                                            EditNote(
+                                              id: id,
+                                              title: title,
+                                              note: note,
+                                              isDone: isdone == 0
+                                                  ? false
+                                                  : true,
+                                            )));
                                   },
                                   child: Dismissible(
                                     key: UniqueKey(),
@@ -222,7 +223,7 @@ class _HomeState extends State<Home> {
                                         padding: EdgeInsets.all(.5),
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
                                               "Delete note",
@@ -244,16 +245,18 @@ class _HomeState extends State<Home> {
                                     onDismissed: (direction) async {
                                       var id = snapshot.data![index]["id"];
                                       var title =
-                                          snapshot.data![index]["title"];
+                                      snapshot.data![index]["title"];
                                       var note = snapshot.data![index]["note"];
                                       var isDone =
-                                          snapshot.data![index]["isDone"];
+                                      snapshot.data![index]["isDone"];
                                       var time =
-                                          snapshot.data![index]["createdAt"];
+                                      snapshot.data![index]["createdAt"];
                                       await sqlDb.readData(
-                                          "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                          "SELECT * FROM 'notes' WHERE id = '${snapshot
+                                              .data![index]["id"]}'");
                                       await sqlDb.deleteData(
-                                          "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                          "DELETE FROM 'notes' WHERE id = '${snapshot
+                                              .data![index]["id"]}'");
                                       setState(() {});
                                       ScaffoldMessenger.of(context)
                                           .clearSnackBars();
@@ -281,16 +284,20 @@ class _HomeState extends State<Home> {
                                       leading: InkWell(
                                         child: isDone
                                             ? const Icon(
-                                                Icons.check,
-                                                color: Colors.green,
-                                              )
+                                          Icons.check,
+                                          color: Colors.green,
+                                        )
                                             : const Icon(
-                                                Icons.crop_square,
-                                                color: Colors.red,
-                                              ),
+                                          Icons.crop_square,
+                                          color: Colors.red,
+                                        ),
                                         onTap: () async {
                                           await sqlDb.updateData(
-                                              "UPDATE 'notes' SET 'isDone' = ${isDone == true ? 0 : 1}  WHERE id = ${snapshot.data![index]["id"]}");
+                                              "UPDATE 'notes' SET 'isDone' = ${isDone ==
+                                                  true
+                                                  ? 0
+                                                  : 1}  WHERE id = ${snapshot
+                                                  .data![index]["id"]}");
                                           setState(() {
                                             isDone = !isDone;
                                           });
@@ -312,7 +319,7 @@ class _HomeState extends State<Home> {
                                       ),
                                       title: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             snapshot.data![index]["title"]
@@ -320,7 +327,7 @@ class _HomeState extends State<Home> {
                                           ),
                                           Text(
                                             formatDateTime(snapshot.data![index]
-                                                ["createdAt"]),
+                                            ["createdAt"]),
                                           ),
                                         ],
                                       ),
