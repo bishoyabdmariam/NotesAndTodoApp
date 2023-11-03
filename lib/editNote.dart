@@ -67,33 +67,48 @@ class _EditNoteState extends State<EditNote> {
           ? AppBar(
               title: const Text("Edit Note"),
               actions: [
-                Switch(
-                    value: isdone,
-                    activeColor: Colors.green,
-                    onChanged: (value) {
-                      ScaffoldMessenger.of(context).clearSnackBars();
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              "Note Marked as ${isdone == true ? 'To Be Done' : 'Done'}")));
-
-                      setState(() {
-                        isdone = value;
-                      });
-                    }),
+                Container(
+                  width: 70,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: InkWell(
+                      child: isdone
+                          ? Icon(
+                              Icons.check,
+                              color: Colors.green,
+                            )
+                          : Icon(
+                              Icons.crop_square,
+                              color: Colors.red,
+                            ),
+                      onTap: () async {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                "Note Marked as ${isdone == true ? 'To Be Done' : 'Done'}")));
+                        setState(() {
+                          isdone = !isdone;
+                        });
+                      },
+                    ),
+                  ),
+                ),
               ],
             )
           : null,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await sqlDb.updateData(
-              "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1} , createdAt = '${DateTime.now().toIso8601String()}' WHERE id = ${widget.id}");
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => Home(),
-          ));
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("Note Edited Correctly")));
-          setState(() {});
+          if (formState.currentState!.validate()) {
+            await sqlDb.updateData(
+                "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1} , createdAt = '${DateTime.now().toIso8601String()}' WHERE id = ${widget.id}");
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => Home(),
+            ));
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text("Note Edited Correctly")));
+            setState(() {});
+          }
         },
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
