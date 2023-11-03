@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todoapp/background%20%20Image.dart';
 import 'package:todoapp/editNote.dart';
 import 'package:todoapp/sqldb.dart';
 
@@ -17,6 +21,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   SqlDb sqlDb = SqlDb();
   late bool showAppBar;
+  File? backgroundImage; // Initialize as null
 
   Future<List<Map>> readData() async {
     setState(() {});
@@ -59,12 +64,24 @@ class _HomeState extends State<Home> {
         dateTime.day == now.day;
   }
 
+  Future<void> _loadBackgroundImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = prefs.getString('backgroundImagePath');
+    print(imagePath);
+    if (imagePath != null) {
+      setState(() {
+        backgroundImage = File(imagePath);
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initialization();
     ThemeHelper.getTheme();
+    _loadBackgroundImage();
   }
 
   @override
@@ -118,6 +135,15 @@ class _HomeState extends State<Home> {
                 // Do something when Item 1 is tapped
               },
             ),
+            ListTile(
+              title: const Text('Change BackGround'),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => BackgroundImageApp()));
+                // Do something when Item 1 is tapped
+              },
+            ),
+
             // Add more ListTiles for additional items in the Drawer
           ],
         ),
@@ -125,184 +151,200 @@ class _HomeState extends State<Home> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => AddNotes()));
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => AddNotes()));
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
-      body: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView(
-                children: [
-                  FutureBuilder(
-                      future: readData(),
-                      builder: (BuildContext context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        if (snapshot.hasData) {
-                          if (snapshot.data!.isEmpty) {
+      body: Container(
+        decoration: BoxDecoration(
+          image: backgroundImage != null
+              ? DecorationImage(
+                  image: FileImage(backgroundImage!),
+                  fit: BoxFit.fill,
+                )
+              : null,
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView(
+                  children: [
+                    FutureBuilder(
+                        future: readData(),
+                        builder: (BuildContext context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
                             return const Center(
-                              child: Text("There is no notes Try add some"),
+                              child: CircularProgressIndicator(),
                             );
                           }
+                          if (snapshot.hasData) {
+                            if (snapshot.data!.isEmpty) {
+                              return const Center(
+                                child: Text("There is no notes Try add some"),
+                              );
+                            }
 
-                          return ListView.builder(
-                            itemCount: snapshot.data != null
-                                ? snapshot.data!.length
-                                : 0,
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              var id = snapshot.data![index]["id"];
-                              var title = snapshot.data![index]["title"];
-                              var note = snapshot.data![index]["note"];
-                              var isdone = snapshot.data![index]["isDone"];
-                              bool isDone = isdone == 0 ? false : true;
+                            return ListView.builder(
+                              itemCount: snapshot.data != null
+                                  ? snapshot.data!.length
+                                  : 0,
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                var id = snapshot.data![index]["id"];
+                                var title = snapshot.data![index]["title"];
+                                var note = snapshot.data![index]["note"];
+                                var isdone = snapshot.data![index]["isDone"];
+                                bool isDone = isdone == 0 ? false : true;
 
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => EditNote(
-                                            id: id,
-                                            title: title,
-                                            note: note,
-                                            isDone: isdone == 0 ? false : true,
-                                          )));
-                                },
-                                child: Dismissible(
-                                  key: UniqueKey(),
-                                  background: Container(
-                                    color: Colors.red[300],
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(.5),
-                                      child: Row(
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (context) => EditNote(
+                                                  id: id,
+                                                  title: title,
+                                                  note: note,
+                                                  isDone: isdone == 0
+                                                      ? false
+                                                      : true,
+                                                )));
+                                  },
+                                  child: Dismissible(
+                                    key: UniqueKey(),
+                                    background: Container(
+                                      color: Colors.red[300],
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(.5),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              "Delete note",
+                                              style: TextStyle(fontSize: 16),
+                                            ),
+                                            Icon(
+                                              Icons.delete,
+                                              color: Colors.white,
+                                              size: 30,
+                                            ),
+                                            Text(
+                                              "Delete note",
+                                              style: TextStyle(fontSize: 16),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    onDismissed: (direction) async {
+                                      var id = snapshot.data![index]["id"];
+                                      var title =
+                                          snapshot.data![index]["title"];
+                                      var note = snapshot.data![index]["note"];
+                                      var isDone =
+                                          snapshot.data![index]["isDone"];
+                                      var time =
+                                          snapshot.data![index]["createdAt"];
+                                      await sqlDb.readData(
+                                          "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                      await sqlDb.deleteData(
+                                          "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                      setState(() {});
+                                      ScaffoldMessenger.of(context)
+                                          .clearSnackBars();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Row(
+                                            children: [
+                                              const Text('Note dismissed'),
+                                              SnackBarAction(
+                                                label: 'Undo',
+                                                onPressed: () async {
+                                                  // Undo the dismissal of the Dismissible widget
+                                                  await sqlDb.insertData(
+                                                      "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time')");
+                                                  setState(() {});
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: ListTile(
+                                      leading: InkWell(
+                                        child: isDone
+                                            ? const Icon(
+                                                Icons.check,
+                                                color: Colors.green,
+                                              )
+                                            : const Icon(
+                                                Icons.crop_square,
+                                                color: Colors.red,
+                                              ),
+                                        onTap: () async {
+                                          await sqlDb.updateData(
+                                              "UPDATE 'notes' SET 'isDone' = ${isDone == true ? 0 : 1}  WHERE id = ${snapshot.data![index]["id"]}");
+                                          setState(() {
+                                            isDone = !isDone;
+                                          });
+                                        },
+                                      ),
+                                      /*Checkbox(
+                                        value: isDone,
+                                        onChanged: (value) async {
+                                          await sqlDb.updateData(
+                                              "UPDATE 'notes' SET 'isDone' = ${value == true ? 1 : 0}  WHERE id = ${snapshot.data![index]["id"]}");
+                                          setState(() {
+                                            isDone = value!;
+                                          });
+                                        },
+                                      ),*/
+                                      subtitle: Text(
+                                        snapshot.data![index]["note"]
+                                            .toString(),
+                                      ),
+                                      title: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            "Delete note",
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                          Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
-                                            size: 30,
+                                            snapshot.data![index]["title"]
+                                                .toString(),
                                           ),
                                           Text(
-                                            "Delete note",
-                                            style: TextStyle(fontSize: 16),
+                                            formatDateTime(snapshot.data![index]
+                                                ["createdAt"]),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
-                                  onDismissed: (direction) async {
-                                    var id = snapshot.data![index]["id"];
-                                    var title = snapshot.data![index]["title"];
-                                    var note = snapshot.data![index]["note"];
-                                    var isDone =
-                                        snapshot.data![index]["isDone"];
-                                    var time =
-                                        snapshot.data![index]["createdAt"];
-                                    await sqlDb.readData(
-                                        "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
-                                    await sqlDb.deleteData(
-                                        "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
-                                    setState(() {});
-                                    ScaffoldMessenger.of(context)
-                                        .clearSnackBars();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Row(
-                                          children: [
-                                            const Text('Note dismissed'),
-                                            SnackBarAction(
-                                              label: 'Undo',
-                                              onPressed: () async {
-                                                // Undo the dismissal of the Dismissible widget
-                                                await sqlDb.insertData(
-                                                    "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time')");
-                                                setState(() {});
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: ListTile(
-                                    leading: InkWell(
-                                      child: isDone
-                                          ? const Icon(
-                                              Icons.check,
-                                              color: Colors.green,
-                                            )
-                                          : const Icon(
-                                              Icons.crop_square,
-                                              color: Colors.red,
-                                            ),
-                                      onTap: () async {
-                                        await sqlDb.updateData(
-                                            "UPDATE 'notes' SET 'isDone' = ${isDone == true ? 0 : 1}  WHERE id = ${snapshot.data![index]["id"]}");
-                                        setState(() {
-                                          isDone = !isDone;
-                                        });
-                                      },
-                                    ),
-                                    /*Checkbox(
-                                      value: isDone,
-                                      onChanged: (value) async {
-                                        await sqlDb.updateData(
-                                            "UPDATE 'notes' SET 'isDone' = ${value == true ? 1 : 0}  WHERE id = ${snapshot.data![index]["id"]}");
-                                        setState(() {
-                                          isDone = value!;
-                                        });
-                                      },
-                                    ),*/
-                                    subtitle: Text(
-                                      snapshot.data![index]["note"].toString(),
-                                    ),
-                                    title: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          snapshot.data![index]["title"]
-                                              .toString(),
-                                        ),
-                                        Text(
-                                          formatDateTime(snapshot.data![index]
-                                              ["createdAt"]),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            );
+                          }
+                          return const Center(
+                            child: Text(
+                              "Something Went Wrong please Contact us on 01202089993",
+                            ),
                           );
-                        }
-                        return const Center(
-                          child: Text(
-                            "Something Went Wrong please Contact us on 01202089993",
-                          ),
-                        );
-                      }),
-                ],
+                        }),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(
-            height: 60,
-          ),
-        ],
+            const SizedBox(
+              height: 60,
+            ),
+          ],
+        ),
       ),
     );
   }

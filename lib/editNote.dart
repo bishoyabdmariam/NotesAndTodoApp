@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todoapp/home.dart';
 import 'package:todoapp/sqldb.dart';
 
@@ -24,6 +27,7 @@ class _EditNoteState extends State<EditNote> {
   SqlDb sqlDb = SqlDb();
   late bool isdone;
   late bool showAppBar;
+  File? backgroundImage;
 
   GlobalKey<FormState> formState = GlobalKey();
   TextEditingController noteController = TextEditingController();
@@ -35,6 +39,18 @@ class _EditNoteState extends State<EditNote> {
     isdone = widget.isDone;
     noteController.text = widget.note;
     titleController.text = widget.title;
+    _loadBackgroundImage();
+  }
+
+  Future<void> _loadBackgroundImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = prefs.getString('backgroundImagePath');
+    print(imagePath);
+    if (imagePath != null) {
+      setState(() {
+        backgroundImage = File(imagePath);
+      });
+    }
   }
 
   @override
@@ -84,6 +100,14 @@ class _EditNoteState extends State<EditNote> {
         child: const Icon(Icons.done),
       ),
       body: Container(
+        decoration: BoxDecoration(
+          image: backgroundImage != null
+              ? DecorationImage(
+                  image: FileImage(backgroundImage!),
+                  fit: BoxFit.fill,
+                )
+              : null,
+        ),
         padding: const EdgeInsets.all(5),
         child: ListView(
           children: [

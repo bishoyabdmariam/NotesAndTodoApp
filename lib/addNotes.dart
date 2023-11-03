@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todoapp/home.dart';
 import 'package:todoapp/sqldb.dart';
 
@@ -16,6 +19,25 @@ class _AddNotesState extends State<AddNotes> {
   TextEditingController title = TextEditingController();
   bool isDone = false;
   late bool showAppBar;
+  File? backgroundImage;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadBackgroundImage();
+  }
+
+  Future<void> _loadBackgroundImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = prefs.getString('backgroundImagePath');
+    print(imagePath);
+    if (imagePath != null) {
+      setState(() {
+        backgroundImage = File(imagePath);
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -102,6 +124,14 @@ class _AddNotesState extends State<AddNotes> {
       ),
       body: SafeArea(
         child: Container(
+          decoration: BoxDecoration(
+            image: backgroundImage != null
+                ? DecorationImage(
+                    image: FileImage(backgroundImage!),
+                    fit: BoxFit.fill,
+                  )
+                : null,
+          ),
           padding: const EdgeInsets.all(10),
           child: ListView(
             children: [
