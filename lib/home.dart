@@ -445,7 +445,10 @@ class _HomeState extends State<Home> {
                                         children: [
                                           Container(
                                             child: isLocked == 0
-                                                ? Icon(Icons.lock_open)
+                                                ? Icon(
+                                                    Icons.lock_open_rounded,
+                                                    color: Colors.black12,
+                                                  )
                                                 : Icon(Icons.lock),
                                           ),
                                           InkWell(
