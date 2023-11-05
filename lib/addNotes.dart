@@ -21,12 +21,14 @@ class _AddNotesState extends State<AddNotes> {
   bool isDone = false;
   late bool showAppBar;
   File? backgroundImage;
+  late bool isObscure;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _loadBackgroundImage();
+    isObscure = true;
   }
 
   Future<void> _loadBackgroundImage() async {
@@ -108,37 +110,58 @@ class _AddNotesState extends State<AddNotes> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          // Initial value for password visibility
+
           Container(
             child: InkWell(
               onTap: () {
                 showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: password.text.isEmpty
-                            ? Text('Enter Password')
-                            : Text("Change Password"),
-                        content: TextFormField(
-                          controller: password,
-                          obscureText: true,
-                          decoration: InputDecoration(hintText: 'Password'),
-                        ),
-                        actions: <Widget>[
-                          ElevatedButton(
-                            child: password.text.isEmpty
-                                ? Text("Submit")
-                                : Text('Change'),
-                            onPressed: () {
-                              // Process the entered password or perform validation
-                              print(
-                                'Entered password: ${password.text}',
-                              );
-                              Navigator.of(context).pop(); // Close the dialog
-                            },
+                  context: context,
+                  builder: (BuildContext context) {
+                    return StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                        return AlertDialog(
+                          title: const Text('Enter Password'),
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  controller: password,
+                                  obscureText: isObscure,
+                                  decoration: InputDecoration(
+                                    hintText: 'Password',
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  isObscure
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    isObscure = !isObscure;
+                                  });
+                                },
+                              )
+                            ],
                           ),
-                        ],
-                      );
-                    });
+                          actions: <Widget>[
+                            ElevatedButton(
+                              onPressed: () {
+                                // Process the entered password or perform validation
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                              child: Text('Submit'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
               },
               child: password.text.isEmpty
                   ? Icon(Icons.lock_open)

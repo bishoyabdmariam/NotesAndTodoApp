@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
   SqlDb sqlDb = SqlDb();
   late bool showAppBar;
   File? backgroundImage; // Initialize as null
-
+  late bool isObscure;
   TextEditingController passwordController = TextEditingController();
 
   Future<List<Map>> readData() async {
@@ -84,6 +84,7 @@ class _HomeState extends State<Home> {
     initialization();
     ThemeHelper.getTheme();
     _loadBackgroundImage();
+    isObscure = true;
   }
 
   @override
@@ -154,7 +155,7 @@ class _HomeState extends State<Home> {
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => AddNotes()));
+              .push(MaterialPageRoute(builder: (context) => const AddNotes()));
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
@@ -213,51 +214,80 @@ class _HomeState extends State<Home> {
                                       ? () => showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text('Enter Password'),
-                                              content: TextFormField(
-                                                controller: passwordController,
-                                                obscureText: true,
-                                                decoration: InputDecoration(
-                                                    hintText: 'Password'),
-                                              ),
-                                              actions: <Widget>[
-                                                ElevatedButton(
-                                                  child: Text("Submit"),
-                                                  onPressed: () {
-                                                    // Process the entered password or perform validation
-                                                    if (passwordController
-                                                            .text ==
-                                                        password) {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                      Navigator.of(context).push(
-                                                          MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      EditNote(
-                                                                        password:
-                                                                            passwordController.text,
-                                                                        id: id,
-                                                                        title:
-                                                                            title,
-                                                                        isLocked: isLocked ==
-                                                                                0
-                                                                            ? false
-                                                                            : true,
-                                                                        note:
-                                                                            note,
-                                                                        isDone: isdone ==
-                                                                                0
-                                                                            ? false
-                                                                            : true,
-                                                                      )));
-                                                    }
-                                                    // Close the dialog
-                                                  },
+                                            return StatefulBuilder(builder:
+                                                (BuildContext context,
+                                                    StateSetter setState) {
+                                              return AlertDialog(
+                                                title: const Text(
+                                                    'Enter Password'),
+                                                content: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      child: TextFormField(
+                                                        controller:
+                                                            passwordController,
+                                                        obscureText: isObscure,
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          hintText: 'Password',
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        isObscure
+                                                            ? Icons.visibility
+                                                            : Icons
+                                                                .visibility_off,
+                                                      ),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          isObscure =
+                                                              !isObscure;
+                                                        });
+                                                      },
+                                                    )
+                                                  ],
                                                 ),
-                                              ],
-                                            );
+                                                actions: <Widget>[
+                                                  ElevatedButton(
+                                                    child: const Text("Submit"),
+                                                    onPressed: () {
+                                                      // Process the entered password or perform validation
+                                                      if (passwordController
+                                                              .text ==
+                                                          password) {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        Navigator.of(context).push(
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        EditNote(
+                                                                          password:
+                                                                              passwordController.text,
+                                                                          id: id,
+                                                                          title:
+                                                                              title,
+                                                                          isLocked: isLocked == 0
+                                                                              ? false
+                                                                              : true,
+                                                                          note:
+                                                                              note,
+                                                                          isDone: isdone == 0
+                                                                              ? false
+                                                                              : true,
+                                                                        )));
+                                                      }
+                                                      // Close the dialog
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            });
                                           })
                                       : () {
                                           Navigator.of(context).push(
@@ -328,63 +358,101 @@ class _HomeState extends State<Home> {
                                                 context: context,
                                                 builder:
                                                     (BuildContext context) {
-                                                  return AlertDialog(
-                                                    title: Text(
-                                                        'Password Required for delete'),
-                                                    content: TextFormField(
-                                                      controller:
-                                                          passwordController,
-                                                      obscureText: true,
-                                                      decoration:
-                                                          InputDecoration(
-                                                              hintText:
-                                                                  'Password'),
-                                                    ),
-                                                    actions: <Widget>[
-                                                      ElevatedButton(
-                                                        child: Text("Cancel"),
-                                                        onPressed: () async {
-                                                          // Process the entered password or perform validation
-                                                          passwordController
-                                                              .clear();
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          setState(() {});
-
-                                                          // Close the dialog
-                                                        },
-                                                      ),
-                                                      ElevatedButton(
-                                                        child: Text("Submit"),
-                                                        onPressed: () async {
-                                                          // Process the entered password or perform validation
-                                                          if (passwordController
-                                                                  .text ==
-                                                              password) {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                            await sqlDb.deleteData(
-                                                                "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
-                                                            setState(() {});
-                                                          } else {
-                                                            // If the password is incorrect, show a SnackBar
-                                                            ScaffoldMessenger
-                                                                    .of(context)
-                                                                .clearSnackBars();
-                                                            ScaffoldMessenger
-                                                                    .of(context)
-                                                                .showSnackBar(
-                                                              SnackBar(
-                                                                content: Text(
-                                                                    'Incorrect password. Please try again.'),
+                                                  return StatefulBuilder(
+                                                      builder:
+                                                          (BuildContext context,
+                                                              StateSetter
+                                                                  setState) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          'Enter Password'),
+                                                      content: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Expanded(
+                                                            child:
+                                                                TextFormField(
+                                                              controller:
+                                                                  passwordController,
+                                                              obscureText:
+                                                                  isObscure,
+                                                              decoration:
+                                                                  const InputDecoration(
+                                                                hintText:
+                                                                    'Password',
                                                               ),
-                                                            );
-                                                          }
-                                                        },
+                                                            ),
+                                                          ),
+                                                          IconButton(
+                                                            icon: Icon(
+                                                              isObscure
+                                                                  ? Icons
+                                                                      .visibility
+                                                                  : Icons
+                                                                      .visibility_off,
+                                                            ),
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                isObscure =
+                                                                    !isObscure;
+                                                              });
+                                                            },
+                                                          )
+                                                        ],
                                                       ),
-                                                    ],
-                                                  );
+                                                      actions: <Widget>[
+                                                        ElevatedButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pushReplacement(
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              const Home()));
+                                                            },
+                                                            child: const Text(
+                                                                "cancel")),
+                                                        ElevatedButton(
+                                                          child: const Text(
+                                                              "Submit"),
+                                                          onPressed: () {
+                                                            // Process the entered password or perform validation
+                                                            if (passwordController
+                                                                    .text ==
+                                                                password) {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                              Navigator.of(context).push(
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          EditNote(
+                                                                            password:
+                                                                                passwordController.text,
+                                                                            id: id,
+                                                                            title:
+                                                                                title,
+                                                                            isLocked: isLocked == 0
+                                                                                ? false
+                                                                                : true,
+                                                                            note:
+                                                                                note,
+                                                                            isDone: isdone == 0
+                                                                                ? false
+                                                                                : true,
+                                                                          )));
+                                                            }
+                                                            // Close the dialog
+                                                          },
+                                                        ),
+                                                      ],
+                                                    );
+                                                  });
                                                 });
                                             ScaffoldMessenger.of(context)
                                                 .clearSnackBars();
@@ -458,11 +526,11 @@ class _HomeState extends State<Home> {
                                         children: [
                                           Container(
                                             child: isLocked == 0
-                                                ? Icon(
+                                                ? const Icon(
                                                     Icons.lock_open_rounded,
                                                     color: Colors.black12,
                                                   )
-                                                : Icon(Icons.lock),
+                                                : const Icon(Icons.lock),
                                           ),
                                           InkWell(
                                             child: isDone

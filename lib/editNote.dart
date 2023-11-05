@@ -33,6 +33,7 @@ class _EditNoteState extends State<EditNote> {
   late bool islocked;
   late bool showAppBar;
   File? backgroundImage;
+  late bool isObscure;
 
   GlobalKey<FormState> formState = GlobalKey();
   TextEditingController noteController = TextEditingController();
@@ -47,6 +48,7 @@ class _EditNoteState extends State<EditNote> {
     noteController.text = widget.note;
     titleController.text = widget.title;
     passwordController.text = widget.password;
+    isObscure = true;
 
     _loadBackgroundImage();
   }
@@ -112,31 +114,52 @@ class _EditNoteState extends State<EditNote> {
             child: InkWell(
               onTap: () {
                 showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: islocked
-                            ? Text('Enter Password')
-                            : Text("Change Password"),
-                        content: TextFormField(
-                          controller: passwordController,
-                          obscureText: true,
-                          decoration: InputDecoration(hintText: 'Password'),
-                        ),
-                        actions: <Widget>[
-                          ElevatedButton(
-                            child: islocked ? Text("Submit") : Text('Change'),
-                            onPressed: () {
-                              // Process the entered password or perform validation
-                              print(
-                                'Entered password: ${passwordController.text}',
-                              );
-                              Navigator.of(context).pop(); // Close the dialog
-                            },
+                  context: context,
+                  builder: (BuildContext context) {
+                    return StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                        return AlertDialog(
+                          title: const Text('Enter Password'),
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  controller: passwordController,
+                                  obscureText: isObscure,
+                                  decoration: InputDecoration(
+                                    hintText: 'Password',
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  isObscure
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    isObscure = !isObscure;
+                                  });
+                                },
+                              )
+                            ],
                           ),
-                        ],
-                      );
-                    });
+                          actions: <Widget>[
+                            ElevatedButton(
+                              onPressed: () {
+                                // Process the entered password or perform validation
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                              child: Text('Submit'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
               },
               child: passwordController.text.isEmpty
                   ? Icon(Icons.lock_open)
