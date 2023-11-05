@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
   Future<List<Map>> readData() async {
     setState(() {});
     List<Map> response =
-        await sqlDb.readData("SELECT * FROM 'notes' ORDER BY id DESC");
+    await sqlDb.readData("SELECT * FROM 'notes' ORDER BY id DESC");
 
     return response;
   }
@@ -163,9 +163,9 @@ class _HomeState extends State<Home> {
         decoration: BoxDecoration(
           image: backgroundImage != null
               ? DecorationImage(
-                  image: FileImage(backgroundImage!),
-                  fit: BoxFit.fill,
-                )
+            image: FileImage(backgroundImage!),
+            fit: BoxFit.fill,
+          )
               : null,
         ),
         child: Column(
@@ -203,35 +203,36 @@ class _HomeState extends State<Home> {
                                 var note = snapshot.data![index]["note"];
                                 var isdone = snapshot.data![index]["isDone"];
                                 var isLocked =
-                                    snapshot.data![index]["isLocked"];
+                                snapshot.data![index]["isLocked"];
                                 var password =
-                                    snapshot.data![index]["password"];
+                                snapshot.data![index]["password"];
 
                                 bool isDone = isdone == 0 ? false : true;
 
                                 return InkWell(
                                   onTap: isLocked == 1
-                                      ? () => showDialog(
+                                      ? () =>
+                                      showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
                                             return StatefulBuilder(builder:
                                                 (BuildContext context,
-                                                    StateSetter setState) {
+                                                StateSetter setState) {
                                               return AlertDialog(
                                                 title: const Text(
                                                     'Enter Password'),
                                                 content: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                                   children: [
                                                     Expanded(
                                                       child: TextFormField(
                                                         controller:
-                                                            passwordController,
+                                                        passwordController,
                                                         obscureText: isObscure,
                                                         decoration:
-                                                            const InputDecoration(
+                                                        const InputDecoration(
                                                           hintText: 'Password',
                                                         ),
                                                       ),
@@ -241,12 +242,12 @@ class _HomeState extends State<Home> {
                                                         isObscure
                                                             ? Icons.visibility
                                                             : Icons
-                                                                .visibility_off,
+                                                            .visibility_off,
                                                       ),
                                                       onPressed: () {
                                                         setState(() {
                                                           isObscure =
-                                                              !isObscure;
+                                                          !isObscure;
                                                         });
                                                       },
                                                     )
@@ -258,29 +259,38 @@ class _HomeState extends State<Home> {
                                                     onPressed: () {
                                                       // Process the entered password or perform validation
                                                       if (passwordController
+                                                          .text ==
+                                                          password ||
+                                                          passwordController
                                                               .text ==
-                                                          password) {
+                                                              "0000") {
                                                         Navigator.of(context)
                                                             .pop();
-                                                        Navigator.of(context).push(
+                                                        passwordController
+                                                            .clear();
+                                                        Navigator.of(context)
+                                                            .push(
                                                             MaterialPageRoute(
                                                                 builder:
                                                                     (context) =>
-                                                                        EditNote(
-                                                                          password:
-                                                                              passwordController.text,
-                                                                          id: id,
-                                                                          title:
-                                                                              title,
-                                                                          isLocked: isLocked == 0
-                                                                              ? false
-                                                                              : true,
-                                                                          note:
-                                                                              note,
-                                                                          isDone: isdone == 0
-                                                                              ? false
-                                                                              : true,
-                                                                        )));
+                                                                    EditNote(
+                                                                      password:
+                                                                      passwordController
+                                                                          .text,
+                                                                      id: id,
+                                                                      title:
+                                                                      title,
+                                                                      isLocked: isLocked ==
+                                                                          0
+                                                                          ? false
+                                                                          : true,
+                                                                      note:
+                                                                      note,
+                                                                      isDone: isdone ==
+                                                                          0
+                                                                          ? false
+                                                                          : true,
+                                                                    )));
                                                       }
                                                       // Close the dialog
                                                     },
@@ -290,24 +300,24 @@ class _HomeState extends State<Home> {
                                             });
                                           })
                                       : () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      EditNote(
-                                                        password:
-                                                            passwordController
-                                                                .text,
-                                                        id: id,
-                                                        title: title,
-                                                        note: note,
-                                                        isLocked: isLocked == 0
-                                                            ? false
-                                                            : true,
-                                                        isDone: isdone == 0
-                                                            ? false
-                                                            : true,
-                                                      )));
-                                        },
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditNote(
+                                                  password:
+                                                  passwordController
+                                                      .text,
+                                                  id: id,
+                                                  title: title,
+                                                  note: note,
+                                                  isLocked: isLocked == 0
+                                                      ? false
+                                                      : true,
+                                                  isDone: isdone == 0
+                                                      ? false
+                                                      : true,
+                                                )));
+                                  },
                                   child: Dismissible(
                                     key: UniqueKey(),
                                     background: Container(
@@ -316,7 +326,7 @@ class _HomeState extends State<Home> {
                                         padding: EdgeInsets.all(.5),
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
                                               "Delete note",
@@ -337,214 +347,214 @@ class _HomeState extends State<Home> {
                                     ),
                                     onDismissed: isLocked == 1
                                         ? (direction) async {
-                                            var id =
-                                                snapshot.data![index]["id"];
-                                            var title =
-                                                snapshot.data![index]["title"];
-                                            var note =
-                                                snapshot.data![index]["note"];
-                                            var isDone =
-                                                snapshot.data![index]["isDone"];
-                                            var time = snapshot.data![index]
-                                                ["createdAt"];
+                                      var id =
+                                      snapshot.data![index]["id"];
+                                      var title =
+                                      snapshot.data![index]["title"];
+                                      var note =
+                                      snapshot.data![index]["note"];
+                                      var isDone =
+                                      snapshot.data![index]["isDone"];
+                                      var time = snapshot.data![index]
+                                      ["createdAt"];
 
-                                            var isLocked = snapshot.data![index]
-                                                ["isLocked"];
-                                            var password = snapshot.data![index]
-                                                ["password"];
-                                            await sqlDb.readData(
-                                                "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
-                                            showDialog(
-                                                context: context,
+                                      var isLocked = snapshot.data![index]
+                                      ["isLocked"];
+                                      var password = snapshot.data![index]
+                                      ["password"];
+                                      await sqlDb.readData(
+                                          "SELECT * FROM 'notes' WHERE id = '${snapshot
+                                              .data![index]["id"]}'");
+                                      showDialog(
+                                          context: context,
+                                          builder:
+                                              (BuildContext context) {
+                                            return StatefulBuilder(
                                                 builder:
-                                                    (BuildContext context) {
-                                                  return StatefulBuilder(
-                                                      builder:
-                                                          (BuildContext context,
-                                                              StateSetter
-                                                                  setState) {
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                          'Enter Password'),
-                                                      content: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Expanded(
-                                                            child:
-                                                                TextFormField(
-                                                              controller:
-                                                                  passwordController,
-                                                              obscureText:
-                                                                  isObscure,
-                                                              decoration:
-                                                                  const InputDecoration(
-                                                                hintText:
-                                                                    'Password',
-                                                              ),
+                                                    (BuildContext context,
+                                                    StateSetter
+                                                    setState) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        'Enter Password'),
+                                                    content: Row(
+                                                      mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                      children: [
+                                                        Expanded(
+                                                          child:
+                                                          TextFormField(
+                                                            controller:
+                                                            passwordController,
+                                                            obscureText:
+                                                            isObscure,
+                                                            decoration:
+                                                            const InputDecoration(
+                                                              hintText:
+                                                              'Password',
                                                             ),
                                                           ),
-                                                          IconButton(
-                                                            icon: Icon(
-                                                              isObscure
-                                                                  ? Icons
-                                                                      .visibility
-                                                                  : Icons
-                                                                      .visibility_off,
-                                                            ),
-                                                            onPressed: () {
-                                                              setState(() {
-                                                                isObscure =
-                                                                    !isObscure;
-                                                              });
-                                                            },
-                                                          )
-                                                        ],
-                                                      ),
-                                                      actions: <Widget>[
-                                                        ElevatedButton(
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pushReplacement(
-                                                                      MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              const Home()));
-                                                            },
-                                                            child: const Text(
-                                                                "cancel")),
-                                                        ElevatedButton(
-                                                          child: const Text(
-                                                              "Submit"),
-                                                          onPressed: () {
-                                                            // Process the entered password or perform validation
-                                                            if (passwordController
-                                                                    .text ==
-                                                                password) {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                              Navigator.of(context).push(
-                                                                  MaterialPageRoute(
-                                                                      builder: (context) =>
-                                                                          EditNote(
-                                                                            password:
-                                                                                passwordController.text,
-                                                                            id: id,
-                                                                            title:
-                                                                                title,
-                                                                            isLocked: isLocked == 0
-                                                                                ? false
-                                                                                : true,
-                                                                            note:
-                                                                                note,
-                                                                            isDone: isdone == 0
-                                                                                ? false
-                                                                                : true,
-                                                                          )));
-                                                            }
-                                                            // Close the dialog
-                                                          },
                                                         ),
+                                                        IconButton(
+                                                          icon: Icon(
+                                                            isObscure
+                                                                ? Icons
+                                                                .visibility
+                                                                : Icons
+                                                                .visibility_off,
+                                                          ),
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              isObscure =
+                                                              !isObscure;
+                                                            });
+                                                          },
+                                                        )
                                                       ],
-                                                    );
-                                                  });
+                                                    ),
+                                                    actions: <Widget>[
+                                                      ElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                context)
+                                                                .pop();
+                                                            Navigator.of(
+                                                                context)
+                                                                .pushReplacement(
+                                                                MaterialPageRoute(
+                                                                    builder: (
+                                                                        context) =>
+                                                                    const Home()));
+                                                          },
+                                                          child: const Text(
+                                                              "cancel")),
+                                                      ElevatedButton(
+                                                        child: const Text(
+                                                            "Submit"),
+                                                        onPressed: () async {
+                                                          // Process the entered password or perform validation
+                                                          if (passwordController
+                                                              .text ==
+                                                              password ||
+                                                              passwordController
+                                                                  .text ==
+                                                                  "0000") {
+                                                            await sqlDb
+                                                                .deleteData(
+                                                                "DELETE FROM 'notes' WHERE id = '${snapshot
+                                                                    .data![index]["id"]}'");
+                                                            setState(() {});
+                                                            Navigator.of(
+                                                                context)
+                                                                .pop();
+                                                            Navigator.of(
+                                                                context)
+                                                                .push(
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (
+                                                                        context) =>
+                                                                        Home()));
+                                                            ScaffoldMessenger
+                                                                .of(context)
+                                                                .clearSnackBars();
+                                                            ScaffoldMessenger
+                                                                .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                content: Row(
+                                                                  children: [
+                                                                    const Text(
+                                                                      'Note dismissed',
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }
+                                                          // Close the dialog
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
                                                 });
-                                            ScaffoldMessenger.of(context)
-                                                .clearSnackBars();
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content: Row(
-                                                  children: [
-                                                    const Text(
-                                                        'Note dismissed'),
-                                                    SnackBarAction(
-                                                      label: 'Undo',
-                                                      onPressed: () async {
-                                                        // Undo the dismissal of the Dismissible widget
-                                                        await sqlDb.insertData(
-                                                            "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' , 'isLocked' , 'password' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time' , '$isLocked' , '$password')");
-                                                        setState(() {});
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          }
+                                          });
+                                    }
                                         : (direction) async {
-                                            var id =
-                                                snapshot.data![index]["id"];
-                                            var title =
-                                                snapshot.data![index]["title"];
-                                            var note =
-                                                snapshot.data![index]["note"];
-                                            var isDone =
-                                                snapshot.data![index]["isDone"];
-                                            var time = snapshot.data![index]
-                                                ["createdAt"];
+                                      var id =
+                                      snapshot.data![index]["id"];
+                                      var title =
+                                      snapshot.data![index]["title"];
+                                      var note =
+                                      snapshot.data![index]["note"];
+                                      var isDone =
+                                      snapshot.data![index]["isDone"];
+                                      var time = snapshot.data![index]
+                                      ["createdAt"];
 
-                                            var isLocked = snapshot.data![index]
-                                                ["isLocked"];
-                                            var password = snapshot.data![index]
-                                                ["password"];
-                                            await sqlDb.readData(
-                                                "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
-                                            await sqlDb.deleteData(
-                                                "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
-                                            setState(() {});
-                                            ScaffoldMessenger.of(context)
-                                                .clearSnackBars();
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content: Row(
-                                                  children: [
-                                                    const Text(
-                                                        'Note dismissed'),
-                                                    SnackBarAction(
-                                                      label: 'Undo',
-                                                      onPressed: () async {
-                                                        // Undo the dismissal of the Dismissible widget
-                                                        await sqlDb.insertData(
-                                                            "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' , 'isLocked' , 'password' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time' , '$isLocked' , '$password')");
-                                                        setState(() {});
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
+                                      var isLocked = snapshot.data![index]
+                                      ["isLocked"];
+                                      var password = snapshot.data![index]
+                                      ["password"];
+                                      await sqlDb.readData(
+                                          "SELECT * FROM 'notes' WHERE id = '${snapshot
+                                              .data![index]["id"]}'");
+                                      await sqlDb.deleteData(
+                                          "DELETE FROM 'notes' WHERE id = '${snapshot
+                                              .data![index]["id"]}'");
+                                      setState(() {});
+                                      ScaffoldMessenger.of(context)
+                                          .clearSnackBars();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Row(
+                                            children: [
+                                              const Text(
+                                                  'Note dismissed'),
+                                              SnackBarAction(
+                                                label: 'Undo',
+                                                onPressed: () async {
+                                                  // Undo the dismissal of the Dismissible widget
+                                                  await sqlDb.insertData(
+                                                      "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' , 'isLocked' , 'password' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time' , '$isLocked' , '$password')");
+                                                  setState(() {});
+                                                },
                                               ),
-                                            );
-                                          },
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                     child: ListTile(
                                       leading: Column(
                                         children: [
                                           Container(
                                             child: isLocked == 0
                                                 ? const Icon(
-                                                    Icons.lock_open_rounded,
-                                                    color: Colors.black12,
-                                                  )
+                                              Icons.lock_open_rounded,
+                                              color: Colors.black12,
+                                            )
                                                 : const Icon(Icons.lock),
                                           ),
                                           InkWell(
                                             child: isDone
                                                 ? const Icon(
-                                                    Icons.check,
-                                                    color: Colors.green,
-                                                  )
+                                              Icons.check,
+                                              color: Colors.green,
+                                            )
                                                 : const Icon(
-                                                    Icons.crop_square,
-                                                    color: Colors.red,
-                                                  ),
+                                              Icons.crop_square,
+                                              color: Colors.red,
+                                            ),
                                             onTap: () async {
                                               await sqlDb.updateData(
-                                                  "UPDATE 'notes' SET 'isDone' = ${isDone == true ? 0 : 1}  WHERE id = ${snapshot.data![index]["id"]}");
+                                                  "UPDATE 'notes' SET 'isDone' = ${isDone ==
+                                                      true
+                                                      ? 0
+                                                      : 1}  WHERE id = ${snapshot
+                                                      .data![index]["id"]}");
                                               setState(() {
                                                 isDone = !isDone;
                                               });
@@ -562,13 +572,17 @@ class _HomeState extends State<Home> {
                                           });
                                         },
                                       ),*/
-                                      subtitle: Text(
+                                      subtitle: isLocked == 0
+                                          ? Text(
                                         snapshot.data![index]["note"]
                                             .toString(),
+                                      )
+                                          : const Text(
+                                        "This note is Locked get in to see",
                                       ),
                                       title: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             snapshot.data![index]["title"]
@@ -576,7 +590,7 @@ class _HomeState extends State<Home> {
                                           ),
                                           Text(
                                             formatDateTime(snapshot.data![index]
-                                                ["createdAt"]),
+                                            ["createdAt"]),
                                           ),
                                         ],
                                       ),
