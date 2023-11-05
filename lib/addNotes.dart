@@ -17,6 +17,7 @@ class _AddNotesState extends State<AddNotes> {
   GlobalKey<FormState> formState = GlobalKey();
   TextEditingController note = TextEditingController();
   TextEditingController title = TextEditingController();
+  TextEditingController password = TextEditingController();
   bool isDone = false;
   late bool showAppBar;
   File? backgroundImage;
@@ -104,23 +105,65 @@ class _AddNotesState extends State<AddNotes> {
               ],
             )
           : null,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (formState.currentState!.validate()) {
-            await sqlDb.insertData(
-                "INSERT INTO 'notes' ('title', 'note', 'isDone', 'createdAt') VALUES ('${title.text}', '${note.text}', $isDone, '${DateTime.now().toIso8601String()}')");
-            setState(() {});
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => Home()));
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            child: InkWell(
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: password.text.isEmpty
+                            ? Text('Enter Password')
+                            : Text("Change Password"),
+                        content: TextFormField(
+                          controller: password,
+                          obscureText: true,
+                          decoration: InputDecoration(hintText: 'Password'),
+                        ),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            child: password.text.isEmpty
+                                ? Text("Submit")
+                                : Text('Change'),
+                            onPressed: () {
+                              // Process the entered password or perform validation
+                              print(
+                                'Entered password: ${password.text}',
+                              );
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                          ),
+                        ],
+                      );
+                    });
+              },
+              child: password.text.isEmpty
+                  ? Icon(Icons.lock_open)
+                  : Icon(Icons.lock),
+            ),
+          ),
+          FloatingActionButton(
+            onPressed: () async {
+              if (formState.currentState!.validate()) {
+                await sqlDb.insertData(
+                    "INSERT INTO 'notes' ('title', 'note', 'isDone', 'createdAt' , 'isLocked' , 'password') VALUES ('${title.text}', '${note.text}', $isDone, '${DateTime.now().toIso8601String()}' , ${password.text.isNotEmpty} , '${password.text}')");
+                setState(() {});
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => Home()));
 
-            ScaffoldMessenger.of(context).clearSnackBars();
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("Note Added Correctly")));
-          }
-        },
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.add),
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Note Added Correctly")));
+              }
+            },
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Container(
@@ -204,3 +247,8 @@ class _AddNotesState extends State<AddNotes> {
     );
   }
 }
+
+/*Future<void> _showPasswordDialog(BuildContext context) async {
+  String password = ''; // Initialize password variable
+
+}*/

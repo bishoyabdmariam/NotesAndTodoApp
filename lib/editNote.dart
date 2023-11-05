@@ -32,11 +32,13 @@ class _EditNoteState extends State<EditNote> {
   GlobalKey<FormState> formState = GlobalKey();
   TextEditingController noteController = TextEditingController();
   TextEditingController titleController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     isdone = widget.isDone;
+
     noteController.text = widget.note;
     titleController.text = widget.title;
     _loadBackgroundImage();
@@ -96,23 +98,65 @@ class _EditNoteState extends State<EditNote> {
               ],
             )
           : null,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (formState.currentState!.validate()) {
-            await sqlDb.updateData(
-                "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1} , createdAt = '${DateTime.now().toIso8601String()}' WHERE id = ${widget.id}");
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => Home(),
-            ));
-            ScaffoldMessenger.of(context).clearSnackBars();
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("Note Edited Correctly")));
-            setState(() {});
-          }
-        },
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.done),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            child: InkWell(
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: passwordController.text.isEmpty
+                            ? Text('Enter Password')
+                            : Text("Change Password"),
+                        content: TextFormField(
+                          controller: passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(hintText: 'Password'),
+                        ),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            child: passwordController.text.isEmpty
+                                ? Text("Submit")
+                                : Text('Change'),
+                            onPressed: () {
+                              // Process the entered password or perform validation
+                              print(
+                                'Entered password: ${passwordController.text}',
+                              );
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                          ),
+                        ],
+                      );
+                    });
+              },
+              child: passwordController.text.isEmpty
+                  ? Icon(Icons.lock_open)
+                  : Icon(Icons.lock),
+            ),
+          ),
+          FloatingActionButton(
+            onPressed: () async {
+              if (formState.currentState!.validate()) {
+                await sqlDb.updateData(
+                    "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1} , createdAt = '${DateTime.now().toIso8601String()}' WHERE id = ${widget.id}");
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => Home(),
+                ));
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Note Edited Correctly")));
+                setState(() {});
+              }
+            },
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            child: const Icon(Icons.done),
+          ),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(

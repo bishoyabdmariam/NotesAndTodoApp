@@ -15,7 +15,7 @@ class SqlDb {
 
   initialDb() async {
     String databasePath = await getDatabasesPath();
-    String path = join(databasePath, "bosh.db");
+    String path = join(databasePath, "bossh.db");
     Database myDb = await openDatabase(path, onCreate: _onCreate, version: 1);
     return myDb;
   }
@@ -27,7 +27,9 @@ class SqlDb {
         "title" TEXT NOT NULL ,
         "note" TEXT NOT NULL , 
         "isDone" BOOLEAN NOT NULL DEFAULT FALSE,
-        "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP 
+        "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+        "isLocked" BOOLEAN NOT NULL DEFAULT FALSE ,
+        "password" TEXT 
       )
     ''');
   }
