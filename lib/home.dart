@@ -307,7 +307,6 @@ class _HomeState extends State<Home> {
                                     ),
                                     onDismissed: isLocked == 1
                                         ? (direction) async {
-                                            var valid = true;
                                             var id =
                                                 snapshot.data![index]["id"];
                                             var title =
@@ -346,6 +345,8 @@ class _HomeState extends State<Home> {
                                                         child: Text("Cancel"),
                                                         onPressed: () async {
                                                           // Process the entered password or perform validation
+                                                          passwordController
+                                                              .clear();
                                                           Navigator.of(context)
                                                               .pop();
                                                           setState(() {});
@@ -366,8 +367,20 @@ class _HomeState extends State<Home> {
                                                             await sqlDb.deleteData(
                                                                 "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
                                                             setState(() {});
+                                                          } else {
+                                                            // If the password is incorrect, show a SnackBar
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .clearSnackBars();
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                content: Text(
+                                                                    'Incorrect password. Please try again.'),
+                                                              ),
+                                                            );
                                                           }
-                                                          // Close the dialog
                                                         },
                                                       ),
                                                     ],

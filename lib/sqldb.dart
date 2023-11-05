@@ -15,7 +15,7 @@ class SqlDb {
 
   initialDb() async {
     String databasePath = await getDatabasesPath();
-    String path = join(databasePath, "bossh.db");
+    String path = join(databasePath, "bosh.db");
     Database myDb = await openDatabase(path, onCreate: _onCreate, version: 1);
     return myDb;
   }
