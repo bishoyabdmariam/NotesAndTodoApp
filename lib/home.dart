@@ -23,6 +23,8 @@ class _HomeState extends State<Home> {
   late bool showAppBar;
   File? backgroundImage; // Initialize as null
 
+  TextEditingController passwordController = TextEditingController();
+
   Future<List<Map>> readData() async {
     setState(() {});
     List<Map> response =
@@ -207,18 +209,75 @@ class _HomeState extends State<Home> {
                                 bool isDone = isdone == 0 ? false : true;
 
                                 return InkWell(
-                                  onTap: isLocked==0 ?  : () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (context) => EditNote(
-                                                  id: id,
-                                                  title: title,
-                                                  note: note,
-                                                  isDone: isdone == 0
-                                                      ? false
-                                                      : true,
-                                                )));
-                                  },
+                                  onTap: isLocked == 1
+                                      ? () => showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('Enter Password'),
+                                              content: TextFormField(
+                                                controller: passwordController,
+                                                obscureText: true,
+                                                decoration: InputDecoration(
+                                                    hintText: 'Password'),
+                                              ),
+                                              actions: <Widget>[
+                                                ElevatedButton(
+                                                  child: Text("Submit"),
+                                                  onPressed: () {
+                                                    // Process the entered password or perform validation
+                                                    if (passwordController
+                                                            .text ==
+                                                        password) {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      Navigator.of(context).push(
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      EditNote(
+                                                                        password:
+                                                                            passwordController.text,
+                                                                        id: id,
+                                                                        title:
+                                                                            title,
+                                                                        isLocked: isLocked ==
+                                                                                0
+                                                                            ? false
+                                                                            : true,
+                                                                        note:
+                                                                            note,
+                                                                        isDone: isdone ==
+                                                                                0
+                                                                            ? false
+                                                                            : true,
+                                                                      )));
+                                                    }
+                                                    // Close the dialog
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          })
+                                      : () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditNote(
+                                                        password:
+                                                            passwordController
+                                                                .text,
+                                                        id: id,
+                                                        title: title,
+                                                        note: note,
+                                                        isLocked: isLocked == 0
+                                                            ? false
+                                                            : true,
+                                                        isDone: isdone == 0
+                                                            ? false
+                                                            : true,
+                                                      )));
+                                        },
                                   child: Dismissible(
                                     key: UniqueKey(),
                                     background: Container(
@@ -246,42 +305,141 @@ class _HomeState extends State<Home> {
                                         ),
                                       ),
                                     ),
-                                    onDismissed: (direction) async {
-                                      var id = snapshot.data![index]["id"];
-                                      var title =
-                                          snapshot.data![index]["title"];
-                                      var note = snapshot.data![index]["note"];
-                                      var isDone =
-                                          snapshot.data![index]["isDone"];
-                                      var time =
-                                          snapshot.data![index]["createdAt"];
-                                      await sqlDb.readData(
-                                          "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
-                                      await sqlDb.deleteData(
-                                          "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
-                                      setState(() {});
-                                      ScaffoldMessenger.of(context)
-                                          .clearSnackBars();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Row(
-                                            children: [
-                                              const Text('Note dismissed'),
-                                              SnackBarAction(
-                                                label: 'Undo',
-                                                onPressed: () async {
-                                                  // Undo the dismissal of the Dismissible widget
-                                                  await sqlDb.insertData(
-                                                      "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time')");
-                                                  setState(() {});
-                                                },
+                                    onDismissed: isLocked == 1
+                                        ? (direction) async {
+                                            var valid = true;
+                                            var id =
+                                                snapshot.data![index]["id"];
+                                            var title =
+                                                snapshot.data![index]["title"];
+                                            var note =
+                                                snapshot.data![index]["note"];
+                                            var isDone =
+                                                snapshot.data![index]["isDone"];
+                                            var time = snapshot.data![index]
+                                                ["createdAt"];
+
+                                            var isLocked = snapshot.data![index]
+                                                ["isLocked"];
+                                            var password = snapshot.data![index]
+                                                ["password"];
+                                            await sqlDb.readData(
+                                                "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                            showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: Text(
+                                                        'Password Required for delete'),
+                                                    content: TextFormField(
+                                                      controller:
+                                                          passwordController,
+                                                      obscureText: true,
+                                                      decoration:
+                                                          InputDecoration(
+                                                              hintText:
+                                                                  'Password'),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      ElevatedButton(
+                                                        child: Text("Cancel"),
+                                                        onPressed: () async {
+                                                          // Process the entered password or perform validation
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          setState(() {});
+
+                                                          // Close the dialog
+                                                        },
+                                                      ),
+                                                      ElevatedButton(
+                                                        child: Text("Submit"),
+                                                        onPressed: () async {
+                                                          // Process the entered password or perform validation
+                                                          if (passwordController
+                                                                  .text ==
+                                                              password) {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                            await sqlDb.deleteData(
+                                                                "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                                            setState(() {});
+                                                          }
+                                                          // Close the dialog
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                });
+                                            ScaffoldMessenger.of(context)
+                                                .clearSnackBars();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Row(
+                                                  children: [
+                                                    const Text(
+                                                        'Note dismissed'),
+                                                    SnackBarAction(
+                                                      label: 'Undo',
+                                                      onPressed: () async {
+                                                        // Undo the dismissal of the Dismissible widget
+                                                        await sqlDb.insertData(
+                                                            "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' , 'isLocked' , 'password' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time' , '$isLocked' , '$password')");
+                                                        setState(() {});
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
+                                            );
+                                          }
+                                        : (direction) async {
+                                            var id =
+                                                snapshot.data![index]["id"];
+                                            var title =
+                                                snapshot.data![index]["title"];
+                                            var note =
+                                                snapshot.data![index]["note"];
+                                            var isDone =
+                                                snapshot.data![index]["isDone"];
+                                            var time = snapshot.data![index]
+                                                ["createdAt"];
+
+                                            var isLocked = snapshot.data![index]
+                                                ["isLocked"];
+                                            var password = snapshot.data![index]
+                                                ["password"];
+                                            await sqlDb.readData(
+                                                "SELECT * FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                            await sqlDb.deleteData(
+                                                "DELETE FROM 'notes' WHERE id = '${snapshot.data![index]["id"]}'");
+                                            setState(() {});
+                                            ScaffoldMessenger.of(context)
+                                                .clearSnackBars();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Row(
+                                                  children: [
+                                                    const Text(
+                                                        'Note dismissed'),
+                                                    SnackBarAction(
+                                                      label: 'Undo',
+                                                      onPressed: () async {
+                                                        // Undo the dismissal of the Dismissible widget
+                                                        await sqlDb.insertData(
+                                                            "INSERT INTO 'notes' ('id' , 'title' , 'note' , 'isDone' , 'createdAt' , 'isLocked' , 'password' ) VALUES ( '$id', '$title' , '$note' , '$isDone' , '$time' , '$isLocked' , '$password')");
+                                                        setState(() {});
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
                                     child: ListTile(
                                       leading: Column(
                                         children: [

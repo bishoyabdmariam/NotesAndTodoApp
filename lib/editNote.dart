@@ -12,10 +12,14 @@ class EditNote extends StatefulWidget {
     required this.id,
     required this.note,
     required this.title,
+    required this.isLocked,
+    required this.password,
   });
 
   final int id;
+  final bool isLocked;
   final String title;
+  final String password;
   final String note;
   final bool isDone;
 
@@ -26,6 +30,7 @@ class EditNote extends StatefulWidget {
 class _EditNoteState extends State<EditNote> {
   SqlDb sqlDb = SqlDb();
   late bool isdone;
+  late bool islocked;
   late bool showAppBar;
   File? backgroundImage;
 
@@ -38,9 +43,11 @@ class _EditNoteState extends State<EditNote> {
   void initState() {
     super.initState();
     isdone = widget.isDone;
-
+    islocked = widget.isLocked;
     noteController.text = widget.note;
     titleController.text = widget.title;
+    passwordController.text = widget.password;
+
     _loadBackgroundImage();
   }
 
@@ -108,7 +115,7 @@ class _EditNoteState extends State<EditNote> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: passwordController.text.isEmpty
+                        title: islocked
                             ? Text('Enter Password')
                             : Text("Change Password"),
                         content: TextFormField(
@@ -118,9 +125,7 @@ class _EditNoteState extends State<EditNote> {
                         ),
                         actions: <Widget>[
                           ElevatedButton(
-                            child: passwordController.text.isEmpty
-                                ? Text("Submit")
-                                : Text('Change'),
+                            child: islocked ? Text("Submit") : Text('Change'),
                             onPressed: () {
                               // Process the entered password or perform validation
                               print(
@@ -142,7 +147,7 @@ class _EditNoteState extends State<EditNote> {
             onPressed: () async {
               if (formState.currentState!.validate()) {
                 await sqlDb.updateData(
-                    "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1} , createdAt = '${DateTime.now().toIso8601String()}' WHERE id = ${widget.id}");
+                    "UPDATE 'notes' SET note = '${noteController.text}' , title = '${titleController.text}' , isDone = ${isdone == false ? 0 : 1} , createdAt = '${DateTime.now().toIso8601String()}' , isLocked = ${islocked == false ? 0 : 1} , password = '${passwordController.text}' WHERE id = ${widget.id}");
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => Home(),
                 ));
