@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todoapp/home.dart';
 import 'package:todoapp/sqldb.dart';
+import 'package:todoapp/textFormField.dart';
 
 class EditNote extends StatefulWidget {
   const EditNote({
@@ -203,38 +204,22 @@ class _EditNoteState extends State<EditNote> {
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  TextFormField(
-                    validator: (value) {
+                  textformfield(
+                    controller: titleController,
+                    validation: (value) {
                       if (value == "") {
-                        return 'you have cleared the title';
+                        return 'You have cleared the title!';
                       } else if (value!.trim().isEmpty) {
-                        return "Spaces is not considered as a valid title , Please enter a valid one";
+                        return "Spaces is not considered as a valid title , Please enter a valid one!";
                       }
                       return null; // Return null if the input is valid
                     },
-                    textInputAction: TextInputAction.next,
-                    controller: titleController,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      hintText: "title",
-                      border: InputBorder.none,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      fillColor: Colors.transparent,
-                      hintStyle: TextStyle(color: Colors.black12),
-                    ),
-                    cursorColor: Colors.black,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Joypixels',
-                    ),
+                    formKey: formState,
+                    hintText: "Title",
+                    maxLines: 1,
                   ),
-                  TextFormField(
-                    validator: (value) {
+                  textformfield(
+                    validation: (value) {
                       if (value == "") {
                         return 'You have cleared the note!';
                       } else if (value!.trim().isEmpty) {
@@ -243,21 +228,9 @@ class _EditNoteState extends State<EditNote> {
                       return null; // Return null if the input is valid
                     },
                     controller: noteController,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.all(20),
-                      hintText: "note",
-                      border: InputBorder.none,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      fillColor: Colors.transparent,
-                      hintStyle: TextStyle(color: Colors.black12),
-                    ),
-                    cursorColor: Colors.black,
                     maxLines: null,
+                    formKey: formState,
+                    hintText: 'Note',
                   ),
                   Container(
                     height: 20,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todoapp/home.dart';
 import 'package:todoapp/sqldb.dart';
+import 'package:todoapp/textFormField.dart';
 
 class AddNotes extends StatefulWidget {
   const AddNotes({super.key});
@@ -205,8 +206,8 @@ class _AddNotesState extends State<AddNotes> {
                 key: formState,
                 child: Column(
                   children: [
-                    TextFormField(
-                      validator: (value) {
+                    textformfield(
+                      validation: (value) {
                         if (value == "") {
                           return 'Please enter title';
                         } else if (value!.trim().isEmpty) {
@@ -214,28 +215,13 @@ class _AddNotesState extends State<AddNotes> {
                         }
                         return null; // Return null if the input is valid
                       },
-                      textInputAction: TextInputAction.next,
                       controller: title,
-                      decoration: const InputDecoration(
-                        hintText: "title",
-                        hoverColor: Colors.green,
-                        border: InputBorder.none,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                        ),
-                        fillColor: Colors.transparent,
-                        hintStyle: TextStyle(color: Colors.green),
-                      ),
-                      cursorColor: Colors.black,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      maxLines: 1,
+                      hintText: 'title',
+                      formKey: formState,
                     ),
-                    TextFormField(
-                      validator: (value) {
+                    textformfield(
+                      validation: (value) {
                         if (value == "") {
                           return 'Please enter note';
                         } else if (value!.trim().isEmpty) {
@@ -244,20 +230,8 @@ class _AddNotesState extends State<AddNotes> {
                         return null; // Return null if the input is valid
                       },
                       controller: note,
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(20),
-                        hintText: "note",
-                        border: InputBorder.none,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                        ),
-                        fillColor: Colors.transparent,
-                        hintStyle: TextStyle(color: Colors.green),
-                      ),
-                      cursorColor: Colors.black,
+                      formKey: formState,
+                      hintText: 'Note',
                       maxLines: null,
                     ),
                   ],
